@@ -1,0 +1,151 @@
+// Copyright 2021 Google LLC.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+package impersonate_test
+
+import (
+	"context"
+	"flag"
+	"fmt"
+	"math/rand"
+	"os"
+	"testing"
+	"time"
+
+	"google.golang.org/api/idtoken"
+	"google.golang.org/api/impersonate"
+	"google.golang.org/api/option"
+
+	"google.golang.org/api/storage/v1"
+)
+
+var (
+	baseKeyFile string
+	// envReaderKeyFile points to a service account that is a "Storage
+	// Object Reader" and is a "Service Account Token Creator" on envWriterSA.
+	readerKeyFile string
+	// envReaderEmail is the name of the reader service account.
+	readerEmail string
+	// envWriterEmail is the name of the writer service account. This service
+	// account has been granted roles/serviceusage.serviceUsageConsumer.
+	writerEmail string
+	// envProjectID is a project that hosts a GCS bucket.
+	projectID string
+)
+
+func TestMain(m *testing.M) {
+	flag.Parse()
+	rand.Seed(time.Now().UnixNano())
+	baseKeyFile = os.Getenv("API_GO_CLIENT_IMPERSONATE_BASE")
+	readerKeyFile = os.Getenv("API_GO_CLIENT_IMPERSONATE_READER")
+	readerEmail = os.Getenv("API_GO_CLIENT_IMPERSONATE_READER_SA")
+	writerEmail = os.Getenv("API_GO_CLIENT_IMPERSONATE_WRITER_SA")
+	projectID = os.Getenv("GOOGLE_CLOUD_PROJECT")
+	os.Exit(m.Run())
+}
+
+func TestTokenSource(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+	ctx := context.Background()
+	tests := []struct {
+		name        string
+		baseKeyFile string
+		delgates    []string
+	}{
+		{
+			name:        "SA -> SA",
+			baseKeyFile: readerKeyFile,
+		},
+		{
+			name:        "SA -> Delegate -> SA",
+			baseKeyFile: baseKeyFile,
+			delgates:    []string{readerEmail},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ts, err := impersonate.TokenSource(ctx,
+				impersonate.Config{
+					TargetPrincipal: writerEmail,
+					Scopes:          []string{"https://www.googleapis.com/auth/devstorage.full_control"},
+					Delegates:       tt.delgates,
+				},
+				option.WithCredentialsFile(tt.baseKeyFile),
+			)
+			if err != nil {
+				t.Fatalf("failed to create ts: %v", err)
+			}
+			svc, err := storage.NewService(ctx, option.WithTokenSource(ts))
+			if err != nil {
+				t.Fatalf("failed to create client: %v", err)
+			}
+			bucketName := fmt.Sprintf("%s-%d", projectID, rand.Int63())
+			if _, err := svc.Buckets.Insert(projectID, &storage.Bucket{
+				Name: bucketName,
+			}).Do(); err != nil {
+				t.Fatalf("error creating bucket: %v", err)
+			}
+			if err := svc.Buckets.Delete(bucketName).Do(); err != nil {
+				t.Fatalf("unable to cleanup bucket %q: %v", bucketName, err)
+			}
+		})
+	}
+}
+
+func TestIDTokenSource(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+	ctx := context.Background()
+	tests := []struct {
+		name        string
+		baseKeyFile string
+		delgates    []string
+	}{
+		{
+			name:        "SA -> SA",
+			baseKeyFile: readerKeyFile,
+		},
+		{
+			name:        "SA -> Delegate -> SA",
+			baseKeyFile: baseKeyFile,
+			delgates:    []string{readerEmail},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			aud := "http://example.com/"
+			ts, err := impersonate.IDTokenSource(ctx,
+				impersonate.IDTokenConfig{
+					TargetPrincipal: writerEmail,
+					Audience:        aud,
+					Delegates:       tt.delgates,
+					IncludeEmail:    true,
+				},
+				option.WithCredentialsFile(tt.baseKeyFile),
+			)
+			if err != nil {
+				t.Fatalf("failed to create ts: %v", err)
+			}
+			tok, err := ts.Token()
+			if err != nil {
+				t.Fatalf("unable to retrieve Token: %v", err)
+			}
+			validTok, err := idtoken.Validate(context.Background(), tok.AccessToken, aud)
+			if err != nil {
+				t.Fatalf("token validation failed: %v", err)
+			}
+			if validTok.Audience != aud {
+				t.Fatalf("got %q, want %q", validTok.Audience, aud)
+			}
+			if validTok.Claims["email"] != writerEmail {
+				t.Fatalf("got %q, want %q", validTok.Claims["email"], writerEmail)
+			}
+		})
+	}
+}
