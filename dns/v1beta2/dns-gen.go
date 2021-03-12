@@ -139,6 +139,8 @@ func New(client *http.Client) (*Service, error) {
 	s.Policies = NewPoliciesService(s)
 	s.Projects = NewProjectsService(s)
 	s.ResourceRecordSets = NewResourceRecordSetsService(s)
+	s.ResponsePolicies = NewResponsePoliciesService(s)
+	s.ResponsePolicyRules = NewResponsePolicyRulesService(s)
 	return s, nil
 }
 
@@ -160,6 +162,10 @@ type Service struct {
 	Projects *ProjectsService
 
 	ResourceRecordSets *ResourceRecordSetsService
+
+	ResponsePolicies *ResponsePoliciesService
+
+	ResponsePolicyRules *ResponsePolicyRulesService
 }
 
 func (s *Service) userAgent() string {
@@ -256,6 +262,24 @@ type ResourceRecordSetsService struct {
 	s *Service
 }
 
+func NewResponsePoliciesService(s *Service) *ResponsePoliciesService {
+	rs := &ResponsePoliciesService{s: s}
+	return rs
+}
+
+type ResponsePoliciesService struct {
+	s *Service
+}
+
+func NewResponsePolicyRulesService(s *Service) *ResponsePolicyRulesService {
+	rs := &ResponsePolicyRulesService{s: s}
+	return rs
+}
+
+type ResponsePolicyRulesService struct {
+	s *Service
+}
+
 // Change: A Change represents a set of ResourceRecordSet additions and
 // deletions applied atomically to a ManagedZone. ResourceRecordSets
 // within a ManagedZone are modified by creating a new Change element in
@@ -286,7 +310,7 @@ type Change struct {
 
 	// Status: Status of the operation (output only). A status of "done"
 	// means that the request to update the authoritative servers has been
-	// sent but the servers might not be updated yet.
+	// sent, but the servers might not be updated yet.
 	//
 	// Possible values:
 	//   "pending"
@@ -337,7 +361,7 @@ type ChangesListResponse struct {
 	// pagination token. In this way you can retrieve the complete contents
 	// of even very large collections one page at a time. However, if the
 	// contents of the collection change between the first and last
-	// paginated list request, the set of all elements returned will be an
+	// paginated list request, the set of all elements returned are an
 	// inconsistent view of the collection. There is no way to retrieve a
 	// "snapshot" of collections larger than the maximum page size.
 	NextPageToken string `json:"nextPageToken,omitempty"`
@@ -400,13 +424,13 @@ type DnsKey struct {
 	// only).
 	Id string `json:"id,omitempty"`
 
-	// IsActive: Active keys will be used to sign subsequent changes to the
-	// ManagedZone. Inactive keys will still be present as DNSKEY Resource
+	// IsActive: Active keys are used to sign subsequent changes to the
+	// ManagedZone. Inactive keys are still present as DNSKEY Resource
 	// Records for the use of resolvers validating existing signatures.
 	IsActive bool `json:"isActive,omitempty"`
 
-	// KeyLength: Length of the key in bits. Specified at creation time then
-	// immutable.
+	// KeyLength: Length of the key in bits. Specified at creation time, and
+	// then immutable.
 	KeyLength int64 `json:"keyLength,omitempty"`
 
 	// KeyTag: The key tag is a non-cryptographic hash of the a DNSKEY
@@ -425,10 +449,10 @@ type DnsKey struct {
 
 	// Type: One of "KEY_SIGNING" or "ZONE_SIGNING". Keys of type
 	// KEY_SIGNING have the Secure Entry Point flag set and, when active,
-	// will be used to sign only resource record sets of type DNSKEY.
-	// Otherwise, the Secure Entry Point flag will be cleared and this key
-	// will be used to sign only resource record sets of other types.
-	// Immutable after creation time.
+	// are used to sign only resource record sets of type DNSKEY. Otherwise,
+	// the Secure Entry Point flag is cleared, and this key is used to sign
+	// only resource record sets of other types. Immutable after creation
+	// time.
 	//
 	// Possible values:
 	//   "keySigning"
@@ -518,9 +542,9 @@ type DnsKeySpec struct {
 
 	// KeyType: Specifies whether this is a key signing key (KSK) or a zone
 	// signing key (ZSK). Key signing keys have the Secure Entry Point flag
-	// set and, when active, will only be used to sign resource record sets
-	// of type DNSKEY. Zone signing keys do not have the Secure Entry Point
-	// flag set and will be used to sign all other types of resource record
+	// set and, when active, are only used to sign resource record sets of
+	// type DNSKEY. Zone signing keys do not have the Secure Entry Point
+	// flag set and are used to sign all other types of resource record
 	// sets.
 	//
 	// Possible values:
@@ -570,7 +594,7 @@ type DnsKeysListResponse struct {
 	// pagination token. In this way you can retrieve the complete contents
 	// of even very large collections one page at a time. However, if the
 	// contents of the collection change between the first and last
-	// paginated list request, the set of all elements returned will be an
+	// paginated list request, the set of all elements returned are an
 	// inconsistent view of the collection. There is no way to retrieve a
 	// "snapshot" of collections larger than the maximum page size.
 	NextPageToken string `json:"nextPageToken,omitempty"`
@@ -644,7 +668,8 @@ type ManagedZone struct {
 
 	// NameServerSet: Optionally specifies the NameServerSet for this
 	// ManagedZone. A NameServerSet is a set of DNS name servers that all
-	// host the same ManagedZones. Most users will leave this field unset.
+	// host the same ManagedZones. Most users leave this field unset. If you
+	// need to use this field, contact your account team.
 	NameServerSet string `json:"nameServerSet,omitempty"`
 
 	// NameServers: Delegate your managed_zone to these virtual name
@@ -661,14 +686,14 @@ type ManagedZone struct {
 	PrivateVisibilityConfig *ManagedZonePrivateVisibilityConfig `json:"privateVisibilityConfig,omitempty"`
 
 	// ReverseLookupConfig: The presence of this field indicates that this
-	// is a managed reverse lookup zone and Cloud DNS will resolve reverse
+	// is a managed reverse lookup zone and Cloud DNS resolves reverse
 	// lookup queries using automatically configured records for VPC
 	// resources. This only applies to networks listed under
 	// private_visibility_config.
 	ReverseLookupConfig *ManagedZoneReverseLookupConfig `json:"reverseLookupConfig,omitempty"`
 
 	// ServiceDirectoryConfig: This field links to the associated service
-	// directory namespace. This field should not be set for public zones or
+	// directory namespace. Do not set this field for public zones or
 	// forwarding zones.
 	ServiceDirectoryConfig *ManagedZoneServiceDirectoryConfig `json:"serviceDirectoryConfig,omitempty"`
 
@@ -760,8 +785,8 @@ type ManagedZoneForwardingConfig struct {
 	Kind string `json:"kind,omitempty"`
 
 	// TargetNameServers: List of target name servers to forward to. Cloud
-	// DNS will select the best available name server if more than one
-	// target is given.
+	// DNS selects the best available name server if more than one target is
+	// given.
 	TargetNameServers []*ManagedZoneForwardingConfigNameServerTarget `json:"targetNameServers,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g. "Kind") to
@@ -789,22 +814,26 @@ func (s *ManagedZoneForwardingConfig) MarshalJSON() ([]byte, error) {
 
 type ManagedZoneForwardingConfigNameServerTarget struct {
 	// ForwardingPath: Forwarding path for this NameServerTarget. If unset
-	// or set to DEFAULT, Cloud DNS will make forwarding decision based on
-	// address ranges, i.e. RFC1918 addresses go to the VPC, non-RFC1918
-	// addresses go to the Internet. When set to PRIVATE, Cloud DNS will
-	// always send queries through VPC for this target.
+	// or set to DEFAULT, Cloud DNS makes forwarding decisions based on IP
+	// address ranges; that is, RFC1918 addresses go to the VPC network,
+	// non-RFC1918 addresses go to the internet. When set to PRIVATE, Cloud
+	// DNS always sends queries through the VPC network for this target.
 	//
 	// Possible values:
-	//   "default" - Cloud DNS will make forwarding decision based on
-	// address ranges, i.e. RFC1918 addresses forward to the target through
-	// the VPC and non-RFC1918 addresses will forward to the target through
-	// the Internet
-	//   "private" - Cloud DNS will always forward to this target through
-	// the VPC.
+	//   "default" - Cloud DNS makes forwarding decisions based on address
+	// ranges; that is, RFC1918 addresses forward to the target through the
+	// VPC and non-RFC1918 addresses forward to the target through the
+	// internet
+	//   "private" - Cloud DNS always forwards to this target through the
+	// VPC.
 	ForwardingPath string `json:"forwardingPath,omitempty"`
 
 	// Ipv4Address: IPv4 address of a target name server.
 	Ipv4Address string `json:"ipv4Address,omitempty"`
+
+	// Ipv6Address: IPv6 address of a target name server. Does not accept
+	// both fields (ipv4 & ipv6) being populated.
+	Ipv6Address string `json:"ipv6Address,omitempty"`
 
 	Kind string `json:"kind,omitempty"`
 
@@ -843,7 +872,7 @@ type ManagedZoneOperationsListResponse struct {
 	// page token. In this way you can retrieve the complete contents of
 	// even very large collections one page at a time. However, if the
 	// contents of the collection change between the first and last
-	// paginated list request, the set of all elements returned will be an
+	// paginated list request, the set of all elements returned are an
 	// inconsistent view of the collection. There is no way to retrieve a
 	// consistent snapshot of a collection larger than the maximum page
 	// size.
@@ -980,7 +1009,7 @@ type ManagedZonePrivateVisibilityConfigNetwork struct {
 	Kind string `json:"kind,omitempty"`
 
 	// NetworkUrl: The fully qualified URL of the VPC network to bind to.
-	// This should be formatted like
+	// Format this URL like
 	// https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network}
 	NetworkUrl string `json:"networkUrl,omitempty"`
 
@@ -1067,7 +1096,7 @@ func (s *ManagedZoneServiceDirectoryConfig) MarshalJSON() ([]byte, error) {
 
 type ManagedZoneServiceDirectoryConfigNamespace struct {
 	// DeletionTime: The time that the namespace backing this zone was
-	// deleted, empty string if it still exists. This is in RFC3339 text
+	// deleted; an empty string if it still exists. This is in RFC3339 text
 	// format. Output only.
 	DeletionTime string `json:"deletionTime,omitempty"`
 
@@ -1116,7 +1145,7 @@ type ManagedZonesListResponse struct {
 	// page token. In this way you can retrieve the complete contents of
 	// even very large collections one page at a time. However, if the
 	// contents of the collection change between the first and last
-	// paginated list request, the set of all elements returned will be an
+	// paginated list request, the set of all elements returned are an
 	// inconsistent view of the collection. There is no way to retrieve a
 	// consistent snapshot of a collection larger than the maximum page
 	// size.
@@ -1294,7 +1323,7 @@ type PoliciesListResponse struct {
 	// page token. In this way you can retrieve the complete contents of
 	// even very large collections one page at a time. However, if the
 	// contents of the collection change between the first and last
-	// paginated list request, the set of all elements returned will be an
+	// paginated list request, the set of all elements returned are an
 	// inconsistent view of the collection. There is no way to retrieve a
 	// consistent snapshot of a collection larger than the maximum page
 	// size.
@@ -1410,8 +1439,8 @@ type Policy struct {
 
 	// EnableInboundForwarding: Allows networks bound to this policy to
 	// receive DNS queries sent by VMs or applications over VPN connections.
-	// When enabled, a virtual IP address will be allocated from each of the
-	// sub-networks that are bound to this policy.
+	// When enabled, a virtual IP address is allocated from each of the
+	// subnetworks that are bound to this policy.
 	EnableInboundForwarding bool `json:"enableInboundForwarding,omitempty"`
 
 	// EnableLogging: Controls whether logging is enabled for the networks
@@ -1424,7 +1453,7 @@ type Policy struct {
 
 	Kind string `json:"kind,omitempty"`
 
-	// Name: User assigned name for this policy.
+	// Name: User-assigned name for this policy.
 	Name string `json:"name,omitempty"`
 
 	// Networks: List of network names specifying networks to which this
@@ -1494,22 +1523,26 @@ func (s *PolicyAlternativeNameServerConfig) MarshalJSON() ([]byte, error) {
 
 type PolicyAlternativeNameServerConfigTargetNameServer struct {
 	// ForwardingPath: Forwarding path for this TargetNameServer. If unset
-	// or set to DEFAULT, Cloud DNS will make forwarding decision based on
-	// address ranges, i.e. RFC1918 addresses go to the VPC, non-RFC1918
-	// addresses go to the Internet. When set to PRIVATE, Cloud DNS will
-	// always send queries through VPC for this target.
+	// or set to DEFAULT, Cloud DNS makes forwarding decisions based on
+	// address ranges; that is, RFC1918 addresses go to the VPC network,
+	// non-RFC1918 addresses go to the internet. When set to PRIVATE, Cloud
+	// DNS always sends queries through the VPC network for this target.
 	//
 	// Possible values:
-	//   "default" - Cloud DNS will make forwarding decision based on
-	// address ranges, i.e. RFC1918 addresses forward to the target through
-	// the VPC and non-RFC1918 addresses will forward to the target through
-	// the Internet
-	//   "private" - Cloud DNS will always forward to this target through
-	// the VPC.
+	//   "default" - Cloud DNS makes forwarding decision based on IP address
+	// ranges; that is, RFC1918 addresses forward to the target through the
+	// VPC and non-RFC1918 addresses forward to the target through the
+	// internet
+	//   "private" - Cloud DNS always forwards to this target through the
+	// VPC.
 	ForwardingPath string `json:"forwardingPath,omitempty"`
 
 	// Ipv4Address: IPv4 address to forward to.
 	Ipv4Address string `json:"ipv4Address,omitempty"`
+
+	// Ipv6Address: IPv6 address to forward to. Does not accept both fields
+	// (ipv4 & ipv6) being populated.
+	Ipv6Address string `json:"ipv6Address,omitempty"`
 
 	Kind string `json:"kind,omitempty"`
 
@@ -1617,10 +1650,6 @@ type Quota struct {
 	// ManagedZone.
 	DnsKeysPerManagedZone int64 `json:"dnsKeysPerManagedZone,omitempty"`
 
-	// GkeClustersPerPolicy: Maximum allowed number of GKE clusters per
-	// policy.
-	GkeClustersPerPolicy int64 `json:"gkeClustersPerPolicy,omitempty"`
-
 	Kind string `json:"kind,omitempty"`
 
 	// ManagedZones: Maximum allowed number of managed zones in the project.
@@ -1643,6 +1672,10 @@ type Quota struct {
 	// ResourceRecordsPerRrset: Maximum allowed number of ResourceRecords
 	// per ResourceRecordSet.
 	ResourceRecordsPerRrset int64 `json:"resourceRecordsPerRrset,omitempty"`
+
+	// ResponsePolicyRulesPerResponsePolicy: Maximum allowed number of rules
+	// per response policy.
+	ResponsePolicyRulesPerResponsePolicy int64 `json:"responsePolicyRulesPerResponsePolicy,omitempty"`
 
 	// RrsetAdditionsPerChange: Maximum allowed number of ResourceRecordSets
 	// to add per ChangesCreateRequest.
@@ -1697,209 +1730,13 @@ func (s *Quota) MarshalJSON() ([]byte, error) {
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
-// RRSetRoutingPolicy: A RRSetRoutingPolicy represents ResourceRecordSet
-// data that will be returned dynamically with the response varying
-// based on configured properties such as geolocation or by weighted
-// random selection.
-type RRSetRoutingPolicy struct {
-	GeoPolicy *RRSetRoutingPolicyGeoPolicy `json:"geoPolicy,omitempty"`
-
-	Kind string `json:"kind,omitempty"`
-
-	WrrPolicy *RRSetRoutingPolicyWrrPolicy `json:"wrrPolicy,omitempty"`
-
-	// ForceSendFields is a list of field names (e.g. "GeoPolicy") to
-	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
-	ForceSendFields []string `json:"-"`
-
-	// NullFields is a list of field names (e.g. "GeoPolicy") to include in
-	// API requests with the JSON null value. By default, fields with empty
-	// values are omitted from API requests. However, any field with an
-	// empty value appearing in NullFields will be sent to the server as
-	// null. It is an error if a field in this list has a non-empty value.
-	// This may be used to include null fields in Patch requests.
-	NullFields []string `json:"-"`
-}
-
-func (s *RRSetRoutingPolicy) MarshalJSON() ([]byte, error) {
-	type NoMethod RRSetRoutingPolicy
-	raw := NoMethod(*s)
-	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
-}
-
-type RRSetRoutingPolicyGeoPolicy struct {
-	// Failovers: If the health check for the primary target for a geo
-	// location returns an unhealthy status, the failover target is returned
-	// instead. This failover configuration is not mandatory. If a failover
-	// is not provided, the primary target won't be healthchecked - we'll
-	// return the primarily configured rrdata irrespective of whether it is
-	// healthy or not.
-	Failovers []*RRSetRoutingPolicyGeoPolicyGeoPolicyItem `json:"failovers,omitempty"`
-
-	// Items: The primary geo routing configuration. If there are multiple
-	// items with the same location, an error is returned instead.
-	Items []*RRSetRoutingPolicyGeoPolicyGeoPolicyItem `json:"items,omitempty"`
-
-	Kind string `json:"kind,omitempty"`
-
-	// ForceSendFields is a list of field names (e.g. "Failovers") to
-	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
-	ForceSendFields []string `json:"-"`
-
-	// NullFields is a list of field names (e.g. "Failovers") to include in
-	// API requests with the JSON null value. By default, fields with empty
-	// values are omitted from API requests. However, any field with an
-	// empty value appearing in NullFields will be sent to the server as
-	// null. It is an error if a field in this list has a non-empty value.
-	// This may be used to include null fields in Patch requests.
-	NullFields []string `json:"-"`
-}
-
-func (s *RRSetRoutingPolicyGeoPolicy) MarshalJSON() ([]byte, error) {
-	type NoMethod RRSetRoutingPolicyGeoPolicy
-	raw := NoMethod(*s)
-	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
-}
-
-type RRSetRoutingPolicyGeoPolicyGeoPolicyItem struct {
-	Kind string `json:"kind,omitempty"`
-
-	// Location: The geo-location granularity is a GCP region. This location
-	// string should correspond to a GCP region. e.g "us-east1",
-	// "southamerica-east1", "asia-east1", etc.
-	Location string `json:"location,omitempty"`
-
-	Rrdatas []string `json:"rrdatas,omitempty"`
-
-	// SignatureRrdatas: DNSSEC generated signatures for the above
-	// geo_rrdata.
-	SignatureRrdatas []string `json:"signatureRrdatas,omitempty"`
-
-	// ForceSendFields is a list of field names (e.g. "Kind") to
-	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
-	ForceSendFields []string `json:"-"`
-
-	// NullFields is a list of field names (e.g. "Kind") to include in API
-	// requests with the JSON null value. By default, fields with empty
-	// values are omitted from API requests. However, any field with an
-	// empty value appearing in NullFields will be sent to the server as
-	// null. It is an error if a field in this list has a non-empty value.
-	// This may be used to include null fields in Patch requests.
-	NullFields []string `json:"-"`
-}
-
-func (s *RRSetRoutingPolicyGeoPolicyGeoPolicyItem) MarshalJSON() ([]byte, error) {
-	type NoMethod RRSetRoutingPolicyGeoPolicyGeoPolicyItem
-	raw := NoMethod(*s)
-	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
-}
-
-type RRSetRoutingPolicyWrrPolicy struct {
-	Items []*RRSetRoutingPolicyWrrPolicyWrrPolicyItem `json:"items,omitempty"`
-
-	Kind string `json:"kind,omitempty"`
-
-	// ForceSendFields is a list of field names (e.g. "Items") to
-	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
-	ForceSendFields []string `json:"-"`
-
-	// NullFields is a list of field names (e.g. "Items") to include in API
-	// requests with the JSON null value. By default, fields with empty
-	// values are omitted from API requests. However, any field with an
-	// empty value appearing in NullFields will be sent to the server as
-	// null. It is an error if a field in this list has a non-empty value.
-	// This may be used to include null fields in Patch requests.
-	NullFields []string `json:"-"`
-}
-
-func (s *RRSetRoutingPolicyWrrPolicy) MarshalJSON() ([]byte, error) {
-	type NoMethod RRSetRoutingPolicyWrrPolicy
-	raw := NoMethod(*s)
-	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
-}
-
-type RRSetRoutingPolicyWrrPolicyWrrPolicyItem struct {
-	Kind string `json:"kind,omitempty"`
-
-	Rrdatas []string `json:"rrdatas,omitempty"`
-
-	// SignatureRrdatas: DNSSEC generated signatures for the above
-	// wrr_rrdata.
-	SignatureRrdatas []string `json:"signatureRrdatas,omitempty"`
-
-	// Weight: The weight corresponding to this subset of rrdata. When
-	// multiple WeightedRoundRobinPolicyItems are configured, the
-	// probability of returning an rrset is proportional to its weight
-	// relative to the sum of weights configured for all items. This weight
-	// should be a decimal in the range [0,1].
-	Weight float64 `json:"weight,omitempty"`
-
-	// ForceSendFields is a list of field names (e.g. "Kind") to
-	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
-	ForceSendFields []string `json:"-"`
-
-	// NullFields is a list of field names (e.g. "Kind") to include in API
-	// requests with the JSON null value. By default, fields with empty
-	// values are omitted from API requests. However, any field with an
-	// empty value appearing in NullFields will be sent to the server as
-	// null. It is an error if a field in this list has a non-empty value.
-	// This may be used to include null fields in Patch requests.
-	NullFields []string `json:"-"`
-}
-
-func (s *RRSetRoutingPolicyWrrPolicyWrrPolicyItem) MarshalJSON() ([]byte, error) {
-	type NoMethod RRSetRoutingPolicyWrrPolicyWrrPolicyItem
-	raw := NoMethod(*s)
-	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
-}
-
-func (s *RRSetRoutingPolicyWrrPolicyWrrPolicyItem) UnmarshalJSON(data []byte) error {
-	type NoMethod RRSetRoutingPolicyWrrPolicyWrrPolicyItem
-	var s1 struct {
-		Weight gensupport.JSONFloat64 `json:"weight"`
-		*NoMethod
-	}
-	s1.NoMethod = (*NoMethod)(s)
-	if err := json.Unmarshal(data, &s1); err != nil {
-		return err
-	}
-	s.Weight = float64(s1.Weight)
-	return nil
-}
-
-// ResourceRecordSet: A unit of data that will be returned by the DNS
+// ResourceRecordSet: A unit of data that is returned by the DNS
 // servers.
 type ResourceRecordSet struct {
 	Kind string `json:"kind,omitempty"`
 
 	// Name: For example, www.example.com.
 	Name string `json:"name,omitempty"`
-
-	// RoutingPolicy: Configures dynamic query responses based on geo
-	// location of querying user or a weighted round robin based routing
-	// policy. A ResourceRecordSet should only have either rrdata (static)
-	// or routing_policy(dynamic). An error is returned otherwise.
-	RoutingPolicy *RRSetRoutingPolicy `json:"routingPolicy,omitempty"`
 
 	// Rrdatas: As defined in RFC 1035 (section 5) and RFC 1034 (section
 	// 3.6.1) -- see examples.
@@ -1943,27 +1780,21 @@ func (s *ResourceRecordSet) MarshalJSON() ([]byte, error) {
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
-type ResourceRecordSetsDeleteResponse struct {
-	// ServerResponse contains the HTTP response code and headers from the
-	// server.
-	googleapi.ServerResponse `json:"-"`
-}
-
 type ResourceRecordSetsListResponse struct {
 	Header *ResponseHeader `json:"header,omitempty"`
 
+	// Kind: Type of resource.
 	Kind string `json:"kind,omitempty"`
 
 	// NextPageToken: The presence of this field indicates that there exist
 	// more results following your last page of results in pagination order.
 	// To fetch them, make another list request using this value as your
-	// pagination token. In this way you can retrieve the complete contents
-	// of even very large collections one page at a time. However, if the
-	// contents of the collection change between the first and last
-	// paginated list request, the set of all elements returned will be an
-	// inconsistent view of the collection. There is no way to retrieve a
-	// consistent snapshot of a collection larger than the maximum page
-	// size.
+	// pagination token. This lets you retrieve complete contents of even
+	// larger collections, one page at a time. However, if the contents of
+	// the collection change between the first and last paginated list
+	// request, the set of elements returned are an inconsistent view of the
+	// collection. You cannot retrieve a consistent snapshot of a collection
+	// larger than the maximum page size.
 	NextPageToken string `json:"nextPageToken,omitempty"`
 
 	// Rrsets: The resource record set resources.
@@ -2026,6 +1857,392 @@ func (s *ResponseHeader) MarshalJSON() ([]byte, error) {
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
+type ResponsePoliciesListResponse struct {
+	Header *ResponseHeader `json:"header,omitempty"`
+
+	// NextPageToken: The presence of this field indicates that there exist
+	// more results following your last page of results in pagination order.
+	// To fetch them, make another list request using this value as your
+	// page token. In this way you can retrieve the complete contents of
+	// even very large collections one page at a time. However, if the
+	// contents of the collection change between the first and last
+	// paginated list request, the set of all elements returned are an
+	// inconsistent view of the collection. There is no way to retrieve a
+	// consistent snapshot of a collection larger than the maximum page
+	// size.
+	NextPageToken string `json:"nextPageToken,omitempty"`
+
+	// ResponsePolicies: The Response Policy resources.
+	ResponsePolicies []*ResponsePolicy `json:"responsePolicies,omitempty"`
+
+	// ServerResponse contains the HTTP response code and headers from the
+	// server.
+	googleapi.ServerResponse `json:"-"`
+
+	// ForceSendFields is a list of field names (e.g. "Header") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Header") to include in API
+	// requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *ResponsePoliciesListResponse) MarshalJSON() ([]byte, error) {
+	type NoMethod ResponsePoliciesListResponse
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type ResponsePoliciesPatchResponse struct {
+	Header *ResponseHeader `json:"header,omitempty"`
+
+	ResponsePolicy *ResponsePolicy `json:"responsePolicy,omitempty"`
+
+	// ServerResponse contains the HTTP response code and headers from the
+	// server.
+	googleapi.ServerResponse `json:"-"`
+
+	// ForceSendFields is a list of field names (e.g. "Header") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Header") to include in API
+	// requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *ResponsePoliciesPatchResponse) MarshalJSON() ([]byte, error) {
+	type NoMethod ResponsePoliciesPatchResponse
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type ResponsePoliciesUpdateResponse struct {
+	Header *ResponseHeader `json:"header,omitempty"`
+
+	ResponsePolicy *ResponsePolicy `json:"responsePolicy,omitempty"`
+
+	// ServerResponse contains the HTTP response code and headers from the
+	// server.
+	googleapi.ServerResponse `json:"-"`
+
+	// ForceSendFields is a list of field names (e.g. "Header") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Header") to include in API
+	// requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *ResponsePoliciesUpdateResponse) MarshalJSON() ([]byte, error) {
+	type NoMethod ResponsePoliciesUpdateResponse
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+// ResponsePolicy: A Response Policy is a collection of selectors that
+// apply to queries made against one or more Virtual Private Cloud
+// networks.
+type ResponsePolicy struct {
+	// Description: User-provided description for this Response Policy.
+	Description string `json:"description,omitempty"`
+
+	// Id: Unique identifier for the resource; defined by the server (output
+	// only).
+	Id int64 `json:"id,omitempty,string"`
+
+	Kind string `json:"kind,omitempty"`
+
+	// Networks: List of network names specifying networks to which this
+	// policy is applied.
+	Networks []*ResponsePolicyNetwork `json:"networks,omitempty"`
+
+	// ResponsePolicyName: User assigned name for this Response Policy.
+	ResponsePolicyName string `json:"responsePolicyName,omitempty"`
+
+	// ServerResponse contains the HTTP response code and headers from the
+	// server.
+	googleapi.ServerResponse `json:"-"`
+
+	// ForceSendFields is a list of field names (e.g. "Description") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Description") to include
+	// in API requests with the JSON null value. By default, fields with
+	// empty values are omitted from API requests. However, any field with
+	// an empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *ResponsePolicy) MarshalJSON() ([]byte, error) {
+	type NoMethod ResponsePolicy
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type ResponsePolicyNetwork struct {
+	Kind string `json:"kind,omitempty"`
+
+	// NetworkUrl: The fully qualified URL of the VPC network to bind to.
+	// This should be formatted like
+	// https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network}
+	NetworkUrl string `json:"networkUrl,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "Kind") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Kind") to include in API
+	// requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *ResponsePolicyNetwork) MarshalJSON() ([]byte, error) {
+	type NoMethod ResponsePolicyNetwork
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+// ResponsePolicyRule: A Response Policy Rule is a selector that applies
+// its behavior to queries that match the selector. Selectors are DNS
+// names, which may be wildcards or exact matches. Each DNS query
+// subject to a Response Policy matches at most one ResponsePolicyRule,
+// as identified by the dns_name field with the longest matching suffix.
+type ResponsePolicyRule struct {
+	// Behavior: Answer this query with a behavior rather than DNS data.
+	//
+	// Possible values:
+	//   "behaviorUnspecified"
+	//   "bypassResponsePolicy" - Skip a less-specific ResponsePolicyRule
+	// and continue normal query logic. This can be used in conjunction with
+	// a wildcard to exempt a subset of the wildcard ResponsePolicyRule from
+	// the ResponsePolicy behavior and e.g., query the public internet
+	// instead. For instance, if these rules exist: *.example.com -> 1.2.3.4
+	// foo.example.com -> PASSTHRU Then a query for 'foo.example.com' skips
+	// the wildcard.
+	Behavior string `json:"behavior,omitempty"`
+
+	// DnsName: The DNS name (wildcard or exact) to apply this rule to. Must
+	// be unique within the Response Policy Rule.
+	DnsName string `json:"dnsName,omitempty"`
+
+	Kind string `json:"kind,omitempty"`
+
+	// LocalData: Answer this query directly with DNS data. These
+	// ResourceRecordSets override any other DNS behavior for the matched
+	// name; in particular they override private zones, the public internet,
+	// and GCP internal DNS. No SOA nor NS types are allowed.
+	LocalData *ResponsePolicyRuleLocalData `json:"localData,omitempty"`
+
+	// RuleName: An identifier for this rule. Must be unique with the
+	// ResponsePolicy.
+	RuleName string `json:"ruleName,omitempty"`
+
+	// ServerResponse contains the HTTP response code and headers from the
+	// server.
+	googleapi.ServerResponse `json:"-"`
+
+	// ForceSendFields is a list of field names (e.g. "Behavior") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Behavior") to include in
+	// API requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *ResponsePolicyRule) MarshalJSON() ([]byte, error) {
+	type NoMethod ResponsePolicyRule
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type ResponsePolicyRuleLocalData struct {
+	// LocalDatas: All resource record sets for this selector, one per
+	// resource record type. The name must match the dns_name.
+	LocalDatas []*ResourceRecordSet `json:"localDatas,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "LocalDatas") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "LocalDatas") to include in
+	// API requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *ResponsePolicyRuleLocalData) MarshalJSON() ([]byte, error) {
+	type NoMethod ResponsePolicyRuleLocalData
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type ResponsePolicyRulesListResponse struct {
+	Header *ResponseHeader `json:"header,omitempty"`
+
+	// NextPageToken: The presence of this field indicates that there exist
+	// more results following your last page of results in pagination order.
+	// To fetch them, make another list request using this value as your
+	// page token. In this way you can retrieve the complete contents of
+	// even very large collections one page at a time. However, if the
+	// contents of the collection change between the first and last
+	// paginated list request, the set of all elements returned are an
+	// inconsistent view of the collection. There is no way to retrieve a
+	// consistent snapshot of a collection larger than the maximum page
+	// size.
+	NextPageToken string `json:"nextPageToken,omitempty"`
+
+	// ResponsePolicyRules: The Response Policy Rule resources.
+	ResponsePolicyRules []*ResponsePolicyRule `json:"responsePolicyRules,omitempty"`
+
+	// ServerResponse contains the HTTP response code and headers from the
+	// server.
+	googleapi.ServerResponse `json:"-"`
+
+	// ForceSendFields is a list of field names (e.g. "Header") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Header") to include in API
+	// requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *ResponsePolicyRulesListResponse) MarshalJSON() ([]byte, error) {
+	type NoMethod ResponsePolicyRulesListResponse
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type ResponsePolicyRulesPatchResponse struct {
+	Header *ResponseHeader `json:"header,omitempty"`
+
+	ResponsePolicyRule *ResponsePolicyRule `json:"responsePolicyRule,omitempty"`
+
+	// ServerResponse contains the HTTP response code and headers from the
+	// server.
+	googleapi.ServerResponse `json:"-"`
+
+	// ForceSendFields is a list of field names (e.g. "Header") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Header") to include in API
+	// requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *ResponsePolicyRulesPatchResponse) MarshalJSON() ([]byte, error) {
+	type NoMethod ResponsePolicyRulesPatchResponse
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+type ResponsePolicyRulesUpdateResponse struct {
+	Header *ResponseHeader `json:"header,omitempty"`
+
+	ResponsePolicyRule *ResponsePolicyRule `json:"responsePolicyRule,omitempty"`
+
+	// ServerResponse contains the HTTP response code and headers from the
+	// server.
+	googleapi.ServerResponse `json:"-"`
+
+	// ForceSendFields is a list of field names (e.g. "Header") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Header") to include in API
+	// requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *ResponsePolicyRulesUpdateResponse) MarshalJSON() ([]byte, error) {
+	type NoMethod ResponsePolicyRulesUpdateResponse
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
 // method id "dns.changes.create":
 
 type ChangesCreateCall struct {
@@ -2038,7 +2255,7 @@ type ChangesCreateCall struct {
 	header_     http.Header
 }
 
-// Create: Atomically update the ResourceRecordSet collection.
+// Create: Atomically updates the ResourceRecordSet collection.
 func (r *ChangesService) Create(project string, managedZone string, change *Change) *ChangesCreateCall {
 	c := &ChangesCreateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.project = project
@@ -2083,7 +2300,7 @@ func (c *ChangesCreateCall) Header() http.Header {
 
 func (c *ChangesCreateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -2148,7 +2365,7 @@ func (c *ChangesCreateCall) Do(opts ...googleapi.CallOption) (*Change, error) {
 	}
 	return ret, nil
 	// {
-	//   "description": "Atomically update the ResourceRecordSet collection.",
+	//   "description": "Atomically updates the ResourceRecordSet collection.",
 	//   "flatPath": "dns/v1beta2/projects/{project}/managedZones/{managedZone}/changes",
 	//   "httpMethod": "POST",
 	//   "id": "dns.changes.create",
@@ -2203,7 +2420,7 @@ type ChangesGetCall struct {
 	header_      http.Header
 }
 
-// Get: Fetch the representation of an existing Change.
+// Get: Fetches the representation of an existing Change.
 func (r *ChangesService) Get(project string, managedZone string, changeId string) *ChangesGetCall {
 	c := &ChangesGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.project = project
@@ -2258,7 +2475,7 @@ func (c *ChangesGetCall) Header() http.Header {
 
 func (c *ChangesGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -2322,7 +2539,7 @@ func (c *ChangesGetCall) Do(opts ...googleapi.CallOption) (*Change, error) {
 	}
 	return ret, nil
 	// {
-	//   "description": "Fetch the representation of an existing Change.",
+	//   "description": "Fetches the representation of an existing Change.",
 	//   "flatPath": "dns/v1beta2/projects/{project}/managedZones/{managedZone}/changes/{changeId}",
 	//   "httpMethod": "GET",
 	//   "id": "dns.changes.get",
@@ -2382,7 +2599,7 @@ type ChangesListCall struct {
 	header_      http.Header
 }
 
-// List: Enumerate Changes to a ResourceRecordSet collection.
+// List: Enumerates Changes to a ResourceRecordSet collection.
 func (r *ChangesService) List(project string, managedZone string) *ChangesListCall {
 	c := &ChangesListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.project = project
@@ -2391,7 +2608,7 @@ func (r *ChangesService) List(project string, managedZone string) *ChangesListCa
 }
 
 // MaxResults sets the optional parameter "maxResults": Maximum number
-// of results to be returned. If unspecified, the server will decide how
+// of results to be returned. If unspecified, the server decides how
 // many results to return.
 func (c *ChangesListCall) MaxResults(maxResults int64) *ChangesListCall {
 	c.urlParams_.Set("maxResults", fmt.Sprint(maxResults))
@@ -2460,7 +2677,7 @@ func (c *ChangesListCall) Header() http.Header {
 
 func (c *ChangesListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -2523,7 +2740,7 @@ func (c *ChangesListCall) Do(opts ...googleapi.CallOption) (*ChangesListResponse
 	}
 	return ret, nil
 	// {
-	//   "description": "Enumerate Changes to a ResourceRecordSet collection.",
+	//   "description": "Enumerates Changes to a ResourceRecordSet collection.",
 	//   "flatPath": "dns/v1beta2/projects/{project}/managedZones/{managedZone}/changes",
 	//   "httpMethod": "GET",
 	//   "id": "dns.changes.list",
@@ -2539,7 +2756,7 @@ func (c *ChangesListCall) Do(opts ...googleapi.CallOption) (*ChangesListResponse
 	//       "type": "string"
 	//     },
 	//     "maxResults": {
-	//       "description": "Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.",
+	//       "description": "Optional. Maximum number of results to be returned. If unspecified, the server decides how many results to return.",
 	//       "format": "int32",
 	//       "location": "query",
 	//       "type": "integer"
@@ -2641,8 +2858,8 @@ func (c *DnsKeysGetCall) ClientOperationId(clientOperationId string) *DnsKeysGet
 
 // DigestType sets the optional parameter "digestType": An optional
 // comma-separated list of digest types to compute and display for key
-// signing keys. If omitted, the recommended digest type will be
-// computed and displayed.
+// signing keys. If omitted, the recommended digest type is computed and
+// displayed.
 func (c *DnsKeysGetCall) DigestType(digestType string) *DnsKeysGetCall {
 	c.urlParams_.Set("digestType", digestType)
 	return c
@@ -2685,7 +2902,7 @@ func (c *DnsKeysGetCall) Header() http.Header {
 
 func (c *DnsKeysGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -2765,7 +2982,7 @@ func (c *DnsKeysGetCall) Do(opts ...googleapi.CallOption) (*DnsKey, error) {
 	//       "type": "string"
 	//     },
 	//     "digestType": {
-	//       "description": "An optional comma-separated list of digest types to compute and display for key signing keys. If omitted, the recommended digest type will be computed and displayed.",
+	//       "description": "An optional comma-separated list of digest types to compute and display for key signing keys. If omitted, the recommended digest type is computed and displayed.",
 	//       "location": "query",
 	//       "type": "string"
 	//     },
@@ -2824,15 +3041,15 @@ func (r *DnsKeysService) List(project string, managedZone string) *DnsKeysListCa
 
 // DigestType sets the optional parameter "digestType": An optional
 // comma-separated list of digest types to compute and display for key
-// signing keys. If omitted, the recommended digest type will be
-// computed and displayed.
+// signing keys. If omitted, the recommended digest type is computed and
+// displayed.
 func (c *DnsKeysListCall) DigestType(digestType string) *DnsKeysListCall {
 	c.urlParams_.Set("digestType", digestType)
 	return c
 }
 
 // MaxResults sets the optional parameter "maxResults": Maximum number
-// of results to be returned. If unspecified, the server will decide how
+// of results to be returned. If unspecified, the server decides how
 // many results to return.
 func (c *DnsKeysListCall) MaxResults(maxResults int64) *DnsKeysListCall {
 	c.urlParams_.Set("maxResults", fmt.Sprint(maxResults))
@@ -2884,7 +3101,7 @@ func (c *DnsKeysListCall) Header() http.Header {
 
 func (c *DnsKeysListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -2957,7 +3174,7 @@ func (c *DnsKeysListCall) Do(opts ...googleapi.CallOption) (*DnsKeysListResponse
 	//   ],
 	//   "parameters": {
 	//     "digestType": {
-	//       "description": "An optional comma-separated list of digest types to compute and display for key signing keys. If omitted, the recommended digest type will be computed and displayed.",
+	//       "description": "An optional comma-separated list of digest types to compute and display for key signing keys. If omitted, the recommended digest type is computed and displayed.",
 	//       "location": "query",
 	//       "type": "string"
 	//     },
@@ -2968,7 +3185,7 @@ func (c *DnsKeysListCall) Do(opts ...googleapi.CallOption) (*DnsKeysListResponse
 	//       "type": "string"
 	//     },
 	//     "maxResults": {
-	//       "description": "Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.",
+	//       "description": "Optional. Maximum number of results to be returned. If unspecified, the server decides how many results to return.",
 	//       "format": "int32",
 	//       "location": "query",
 	//       "type": "integer"
@@ -3033,7 +3250,7 @@ type ManagedZoneOperationsGetCall struct {
 	header_      http.Header
 }
 
-// Get: Fetch the representation of an existing Operation.
+// Get: Fetches the representation of an existing Operation.
 func (r *ManagedZoneOperationsService) Get(project string, managedZone string, operation string) *ManagedZoneOperationsGetCall {
 	c := &ManagedZoneOperationsGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.project = project
@@ -3088,7 +3305,7 @@ func (c *ManagedZoneOperationsGetCall) Header() http.Header {
 
 func (c *ManagedZoneOperationsGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -3152,7 +3369,7 @@ func (c *ManagedZoneOperationsGetCall) Do(opts ...googleapi.CallOption) (*Operat
 	}
 	return ret, nil
 	// {
-	//   "description": "Fetch the representation of an existing Operation.",
+	//   "description": "Fetches the representation of an existing Operation.",
 	//   "flatPath": "dns/v1beta2/projects/{project}/managedZones/{managedZone}/operations/{operation}",
 	//   "httpMethod": "GET",
 	//   "id": "dns.managedZoneOperations.get",
@@ -3174,7 +3391,7 @@ func (c *ManagedZoneOperationsGetCall) Do(opts ...googleapi.CallOption) (*Operat
 	//       "type": "string"
 	//     },
 	//     "operation": {
-	//       "description": "Identifies the operation addressed by this request.",
+	//       "description": "Identifies the operation addressed by this request (ID of the operation).",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
@@ -3212,7 +3429,7 @@ type ManagedZoneOperationsListCall struct {
 	header_      http.Header
 }
 
-// List: Enumerate Operations for the given ManagedZone.
+// List: Enumerates Operations for the given ManagedZone.
 func (r *ManagedZoneOperationsService) List(project string, managedZone string) *ManagedZoneOperationsListCall {
 	c := &ManagedZoneOperationsListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.project = project
@@ -3221,7 +3438,7 @@ func (r *ManagedZoneOperationsService) List(project string, managedZone string) 
 }
 
 // MaxResults sets the optional parameter "maxResults": Maximum number
-// of results to be returned. If unspecified, the server will decide how
+// of results to be returned. If unspecified, the server decides how
 // many results to return.
 func (c *ManagedZoneOperationsListCall) MaxResults(maxResults int64) *ManagedZoneOperationsListCall {
 	c.urlParams_.Set("maxResults", fmt.Sprint(maxResults))
@@ -3284,7 +3501,7 @@ func (c *ManagedZoneOperationsListCall) Header() http.Header {
 
 func (c *ManagedZoneOperationsListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -3348,7 +3565,7 @@ func (c *ManagedZoneOperationsListCall) Do(opts ...googleapi.CallOption) (*Manag
 	}
 	return ret, nil
 	// {
-	//   "description": "Enumerate Operations for the given ManagedZone.",
+	//   "description": "Enumerates Operations for the given ManagedZone.",
 	//   "flatPath": "dns/v1beta2/projects/{project}/managedZones/{managedZone}/operations",
 	//   "httpMethod": "GET",
 	//   "id": "dns.managedZoneOperations.list",
@@ -3364,7 +3581,7 @@ func (c *ManagedZoneOperationsListCall) Do(opts ...googleapi.CallOption) (*Manag
 	//       "type": "string"
 	//     },
 	//     "maxResults": {
-	//       "description": "Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.",
+	//       "description": "Optional. Maximum number of results to be returned. If unspecified, the server decides how many results to return.",
 	//       "format": "int32",
 	//       "location": "query",
 	//       "type": "integer"
@@ -3485,7 +3702,7 @@ func (c *ManagedZonesCreateCall) Header() http.Header {
 
 func (c *ManagedZonesCreateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -3639,7 +3856,7 @@ func (c *ManagedZonesDeleteCall) Header() http.Header {
 
 func (c *ManagedZonesDeleteCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -3776,7 +3993,7 @@ func (c *ManagedZonesGetCall) Header() http.Header {
 
 func (c *ManagedZonesGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -3907,7 +4124,7 @@ func (c *ManagedZonesListCall) DnsName(dnsName string) *ManagedZonesListCall {
 }
 
 // MaxResults sets the optional parameter "maxResults": Maximum number
-// of results to be returned. If unspecified, the server will decide how
+// of results to be returned. If unspecified, the server decides how
 // many results to return.
 func (c *ManagedZonesListCall) MaxResults(maxResults int64) *ManagedZonesListCall {
 	c.urlParams_.Set("maxResults", fmt.Sprint(maxResults))
@@ -3959,7 +4176,7 @@ func (c *ManagedZonesListCall) Header() http.Header {
 
 func (c *ManagedZonesListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4035,7 +4252,7 @@ func (c *ManagedZonesListCall) Do(opts ...googleapi.CallOption) (*ManagedZonesLi
 	//       "type": "string"
 	//     },
 	//     "maxResults": {
-	//       "description": "Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.",
+	//       "description": "Optional. Maximum number of results to be returned. If unspecified, the server decides how many results to return.",
 	//       "format": "int32",
 	//       "location": "query",
 	//       "type": "integer"
@@ -4144,7 +4361,7 @@ func (c *ManagedZonesPatchCall) Header() http.Header {
 
 func (c *ManagedZonesPatchCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4308,7 +4525,7 @@ func (c *ManagedZonesUpdateCall) Header() http.Header {
 
 func (c *ManagedZonesUpdateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4426,7 +4643,7 @@ type PoliciesCreateCall struct {
 	header_    http.Header
 }
 
-// Create: Create a new Policy
+// Create: Creates a new Policy.
 func (r *PoliciesService) Create(project string, policy *Policy) *PoliciesCreateCall {
 	c := &PoliciesCreateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.project = project
@@ -4470,7 +4687,7 @@ func (c *PoliciesCreateCall) Header() http.Header {
 
 func (c *PoliciesCreateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4534,7 +4751,7 @@ func (c *PoliciesCreateCall) Do(opts ...googleapi.CallOption) (*Policy, error) {
 	}
 	return ret, nil
 	// {
-	//   "description": "Create a new Policy",
+	//   "description": "Creates a new Policy.",
 	//   "flatPath": "dns/v1beta2/projects/{project}/policies",
 	//   "httpMethod": "POST",
 	//   "id": "dns.policies.create",
@@ -4580,8 +4797,8 @@ type PoliciesDeleteCall struct {
 	header_    http.Header
 }
 
-// Delete: Delete a previously created Policy. Will fail if the policy
-// is still being referenced by a network.
+// Delete: Deletes a previously created Policy. Fails if the policy is
+// still being referenced by a network.
 func (r *PoliciesService) Delete(project string, policy string) *PoliciesDeleteCall {
 	c := &PoliciesDeleteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.project = project
@@ -4625,7 +4842,7 @@ func (c *PoliciesDeleteCall) Header() http.Header {
 
 func (c *PoliciesDeleteCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4660,7 +4877,7 @@ func (c *PoliciesDeleteCall) Do(opts ...googleapi.CallOption) error {
 	}
 	return nil
 	// {
-	//   "description": "Delete a previously created Policy. Will fail if the policy is still being referenced by a network.",
+	//   "description": "Deletes a previously created Policy. Fails if the policy is still being referenced by a network.",
 	//   "flatPath": "dns/v1beta2/projects/{project}/policies/{policy}",
 	//   "httpMethod": "DELETE",
 	//   "id": "dns.policies.delete",
@@ -4708,7 +4925,7 @@ type PoliciesGetCall struct {
 	header_      http.Header
 }
 
-// Get: Fetch the representation of an existing Policy.
+// Get: Fetches the representation of an existing Policy.
 func (r *PoliciesService) Get(project string, policy string) *PoliciesGetCall {
 	c := &PoliciesGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.project = project
@@ -4762,7 +4979,7 @@ func (c *PoliciesGetCall) Header() http.Header {
 
 func (c *PoliciesGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4825,7 +5042,7 @@ func (c *PoliciesGetCall) Do(opts ...googleapi.CallOption) (*Policy, error) {
 	}
 	return ret, nil
 	// {
-	//   "description": "Fetch the representation of an existing Policy.",
+	//   "description": "Fetches the representation of an existing Policy.",
 	//   "flatPath": "dns/v1beta2/projects/{project}/policies/{policy}",
 	//   "httpMethod": "GET",
 	//   "id": "dns.policies.get",
@@ -4877,7 +5094,7 @@ type PoliciesListCall struct {
 	header_      http.Header
 }
 
-// List: Enumerate all Policies associated with a project.
+// List: Enumerates all Policies associated with a project.
 func (r *PoliciesService) List(project string) *PoliciesListCall {
 	c := &PoliciesListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.project = project
@@ -4885,7 +5102,7 @@ func (r *PoliciesService) List(project string) *PoliciesListCall {
 }
 
 // MaxResults sets the optional parameter "maxResults": Maximum number
-// of results to be returned. If unspecified, the server will decide how
+// of results to be returned. If unspecified, the server decides how
 // many results to return.
 func (c *PoliciesListCall) MaxResults(maxResults int64) *PoliciesListCall {
 	c.urlParams_.Set("maxResults", fmt.Sprint(maxResults))
@@ -4937,7 +5154,7 @@ func (c *PoliciesListCall) Header() http.Header {
 
 func (c *PoliciesListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4999,7 +5216,7 @@ func (c *PoliciesListCall) Do(opts ...googleapi.CallOption) (*PoliciesListRespon
 	}
 	return ret, nil
 	// {
-	//   "description": "Enumerate all Policies associated with a project.",
+	//   "description": "Enumerates all Policies associated with a project.",
 	//   "flatPath": "dns/v1beta2/projects/{project}/policies",
 	//   "httpMethod": "GET",
 	//   "id": "dns.policies.list",
@@ -5008,7 +5225,7 @@ func (c *PoliciesListCall) Do(opts ...googleapi.CallOption) (*PoliciesListRespon
 	//   ],
 	//   "parameters": {
 	//     "maxResults": {
-	//       "description": "Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.",
+	//       "description": "Optional. Maximum number of results to be returned. If unspecified, the server decides how many results to return.",
 	//       "format": "int32",
 	//       "location": "query",
 	//       "type": "integer"
@@ -5117,7 +5334,7 @@ func (c *PoliciesPatchCall) Header() http.Header {
 
 func (c *PoliciesPatchCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -5281,7 +5498,7 @@ func (c *PoliciesUpdateCall) Header() http.Header {
 
 func (c *PoliciesUpdateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -5452,7 +5669,7 @@ func (c *ProjectsGetCall) Header() http.Header {
 
 func (c *ProjectsGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -5605,7 +5822,7 @@ func (c *ProjectsManagedZonesRrsetsCreateCall) Header() http.Header {
 
 func (c *ProjectsManagedZonesRrsetsCreateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -5771,7 +5988,7 @@ func (c *ProjectsManagedZonesRrsetsDeleteCall) Header() http.Header {
 
 func (c *ProjectsManagedZonesRrsetsDeleteCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -5796,42 +6013,17 @@ func (c *ProjectsManagedZonesRrsetsDeleteCall) doRequest(alt string) (*http.Resp
 }
 
 // Do executes the "dns.projects.managedZones.rrsets.delete" call.
-// Exactly one of *ResourceRecordSetsDeleteResponse or error will be
-// non-nil. Any non-2xx status code is an error. Response headers are in
-// either *ResourceRecordSetsDeleteResponse.ServerResponse.Header or (if
-// a response was returned at all) in error.(*googleapi.Error).Header.
-// Use googleapi.IsNotModified to check whether the returned error was
-// because http.StatusNotModified was returned.
-func (c *ProjectsManagedZonesRrsetsDeleteCall) Do(opts ...googleapi.CallOption) (*ResourceRecordSetsDeleteResponse, error) {
+func (c *ProjectsManagedZonesRrsetsDeleteCall) Do(opts ...googleapi.CallOption) error {
 	gensupport.SetOptions(c.urlParams_, opts...)
 	res, err := c.doRequest("json")
-	if res != nil && res.StatusCode == http.StatusNotModified {
-		if res.Body != nil {
-			res.Body.Close()
-		}
-		return nil, &googleapi.Error{
-			Code:   res.StatusCode,
-			Header: res.Header,
-		}
-	}
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer googleapi.CloseBody(res)
 	if err := googleapi.CheckResponse(res); err != nil {
-		return nil, err
+		return err
 	}
-	ret := &ResourceRecordSetsDeleteResponse{
-		ServerResponse: googleapi.ServerResponse{
-			Header:         res.Header,
-			HTTPStatusCode: res.StatusCode,
-		},
-	}
-	target := &ret
-	if err := gensupport.DecodeResponse(target, res); err != nil {
-		return nil, err
-	}
-	return ret, nil
+	return nil
 	// {
 	//   "description": "Delete a previously created ResourceRecordSet.",
 	//   "flatPath": "dns/v1beta2/projects/{project}/managedZones/{managedZone}/rrsets/{name}/{type}",
@@ -5875,9 +6067,6 @@ func (c *ProjectsManagedZonesRrsetsDeleteCall) Do(opts ...googleapi.CallOption) 
 	//     }
 	//   },
 	//   "path": "dns/v1beta2/projects/{project}/managedZones/{managedZone}/rrsets/{name}/{type}",
-	//   "response": {
-	//     "$ref": "ResourceRecordSetsDeleteResponse"
-	//   },
 	//   "scopes": [
 	//     "https://www.googleapis.com/auth/cloud-platform",
 	//     "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
@@ -5956,7 +6145,7 @@ func (c *ProjectsManagedZonesRrsetsGetCall) Header() http.Header {
 
 func (c *ProjectsManagedZonesRrsetsGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -6137,7 +6326,7 @@ func (c *ProjectsManagedZonesRrsetsPatchCall) Header() http.Header {
 
 func (c *ProjectsManagedZonesRrsetsPatchCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -6272,7 +6461,7 @@ type ResourceRecordSetsListCall struct {
 	header_      http.Header
 }
 
-// List: Enumerate ResourceRecordSets that have been created but not yet
+// List: Enumerates ResourceRecordSets that you have created but not yet
 // deleted.
 func (r *ResourceRecordSetsService) List(project string, managedZone string) *ResourceRecordSetsListCall {
 	c := &ResourceRecordSetsListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
@@ -6282,7 +6471,7 @@ func (r *ResourceRecordSetsService) List(project string, managedZone string) *Re
 }
 
 // MaxResults sets the optional parameter "maxResults": Maximum number
-// of results to be returned. If unspecified, the server will decide how
+// of results to be returned. If unspecified, the server decides how
 // many results to return.
 func (c *ResourceRecordSetsListCall) MaxResults(maxResults int64) *ResourceRecordSetsListCall {
 	c.urlParams_.Set("maxResults", fmt.Sprint(maxResults))
@@ -6349,7 +6538,7 @@ func (c *ResourceRecordSetsListCall) Header() http.Header {
 
 func (c *ResourceRecordSetsListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -6412,7 +6601,7 @@ func (c *ResourceRecordSetsListCall) Do(opts ...googleapi.CallOption) (*Resource
 	}
 	return ret, nil
 	// {
-	//   "description": "Enumerate ResourceRecordSets that have been created but not yet deleted.",
+	//   "description": "Enumerates ResourceRecordSets that you have created but not yet deleted.",
 	//   "flatPath": "dns/v1beta2/projects/{project}/managedZones/{managedZone}/rrsets",
 	//   "httpMethod": "GET",
 	//   "id": "dns.resourceRecordSets.list",
@@ -6428,7 +6617,7 @@ func (c *ResourceRecordSetsListCall) Do(opts ...googleapi.CallOption) (*Resource
 	//       "type": "string"
 	//     },
 	//     "maxResults": {
-	//       "description": "Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.",
+	//       "description": "Optional. Maximum number of results to be returned. If unspecified, the server decides how many results to return.",
 	//       "format": "int32",
 	//       "location": "query",
 	//       "type": "integer"
@@ -6488,4 +6677,2010 @@ func (c *ResourceRecordSetsListCall) Pages(ctx context.Context, f func(*Resource
 		}
 		c.PageToken(x.NextPageToken)
 	}
+}
+
+// method id "dns.responsePolicies.create":
+
+type ResponsePoliciesCreateCall struct {
+	s              *Service
+	project        string
+	responsepolicy *ResponsePolicy
+	urlParams_     gensupport.URLParams
+	ctx_           context.Context
+	header_        http.Header
+}
+
+// Create: Creates a new Response Policy
+func (r *ResponsePoliciesService) Create(project string, responsepolicy *ResponsePolicy) *ResponsePoliciesCreateCall {
+	c := &ResponsePoliciesCreateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.responsepolicy = responsepolicy
+	return c
+}
+
+// ClientOperationId sets the optional parameter "clientOperationId":
+// For mutating operation requests only. An optional identifier
+// specified by the client. Must be unique for operation resources in
+// the Operations collection.
+func (c *ResponsePoliciesCreateCall) ClientOperationId(clientOperationId string) *ResponsePoliciesCreateCall {
+	c.urlParams_.Set("clientOperationId", clientOperationId)
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *ResponsePoliciesCreateCall) Fields(s ...googleapi.Field) *ResponsePoliciesCreateCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *ResponsePoliciesCreateCall) Context(ctx context.Context) *ResponsePoliciesCreateCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *ResponsePoliciesCreateCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *ResponsePoliciesCreateCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	body, err := googleapi.WithoutDataWrapper.JSONReader(c.responsepolicy)
+	if err != nil {
+		return nil, err
+	}
+	reqHeaders.Set("Content-Type", "application/json")
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "dns/v1beta2/projects/{project}/responsePolicies")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("POST", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project": c.project,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "dns.responsePolicies.create" call.
+// Exactly one of *ResponsePolicy or error will be non-nil. Any non-2xx
+// status code is an error. Response headers are in either
+// *ResponsePolicy.ServerResponse.Header or (if a response was returned
+// at all) in error.(*googleapi.Error).Header. Use
+// googleapi.IsNotModified to check whether the returned error was
+// because http.StatusNotModified was returned.
+func (c *ResponsePoliciesCreateCall) Do(opts ...googleapi.CallOption) (*ResponsePolicy, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &ResponsePolicy{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Creates a new Response Policy",
+	//   "flatPath": "dns/v1beta2/projects/{project}/responsePolicies",
+	//   "httpMethod": "POST",
+	//   "id": "dns.responsePolicies.create",
+	//   "parameterOrder": [
+	//     "project"
+	//   ],
+	//   "parameters": {
+	//     "clientOperationId": {
+	//       "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "project": {
+	//       "description": "Identifies the project addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "dns/v1beta2/projects/{project}/responsePolicies",
+	//   "request": {
+	//     "$ref": "ResponsePolicy"
+	//   },
+	//   "response": {
+	//     "$ref": "ResponsePolicy"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+	//   ]
+	// }
+
+}
+
+// method id "dns.responsePolicies.delete":
+
+type ResponsePoliciesDeleteCall struct {
+	s              *Service
+	project        string
+	responsePolicy string
+	urlParams_     gensupport.URLParams
+	ctx_           context.Context
+	header_        http.Header
+}
+
+// Delete: Delete a previously created Response Policy. Fails if the
+// response policy is non-empty or still being referenced by a network.
+func (r *ResponsePoliciesService) Delete(project string, responsePolicy string) *ResponsePoliciesDeleteCall {
+	c := &ResponsePoliciesDeleteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.responsePolicy = responsePolicy
+	return c
+}
+
+// ClientOperationId sets the optional parameter "clientOperationId":
+// For mutating operation requests only. An optional identifier
+// specified by the client. Must be unique for operation resources in
+// the Operations collection.
+func (c *ResponsePoliciesDeleteCall) ClientOperationId(clientOperationId string) *ResponsePoliciesDeleteCall {
+	c.urlParams_.Set("clientOperationId", clientOperationId)
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *ResponsePoliciesDeleteCall) Fields(s ...googleapi.Field) *ResponsePoliciesDeleteCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *ResponsePoliciesDeleteCall) Context(ctx context.Context) *ResponsePoliciesDeleteCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *ResponsePoliciesDeleteCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *ResponsePoliciesDeleteCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("DELETE", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project":        c.project,
+		"responsePolicy": c.responsePolicy,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "dns.responsePolicies.delete" call.
+func (c *ResponsePoliciesDeleteCall) Do(opts ...googleapi.CallOption) error {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if err != nil {
+		return err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return err
+	}
+	return nil
+	// {
+	//   "description": "Delete a previously created Response Policy. Fails if the response policy is non-empty or still being referenced by a network.",
+	//   "flatPath": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}",
+	//   "httpMethod": "DELETE",
+	//   "id": "dns.responsePolicies.delete",
+	//   "parameterOrder": [
+	//     "project",
+	//     "responsePolicy"
+	//   ],
+	//   "parameters": {
+	//     "clientOperationId": {
+	//       "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "project": {
+	//       "description": "Identifies the project addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "responsePolicy": {
+	//       "description": "User assigned name of the Response Policy addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}",
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+	//   ]
+	// }
+
+}
+
+// method id "dns.responsePolicies.get":
+
+type ResponsePoliciesGetCall struct {
+	s              *Service
+	project        string
+	responsePolicy string
+	urlParams_     gensupport.URLParams
+	ifNoneMatch_   string
+	ctx_           context.Context
+	header_        http.Header
+}
+
+// Get: Fetch the representation of an existing Response Policy.
+func (r *ResponsePoliciesService) Get(project string, responsePolicy string) *ResponsePoliciesGetCall {
+	c := &ResponsePoliciesGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.responsePolicy = responsePolicy
+	return c
+}
+
+// ClientOperationId sets the optional parameter "clientOperationId":
+// For mutating operation requests only. An optional identifier
+// specified by the client. Must be unique for operation resources in
+// the Operations collection.
+func (c *ResponsePoliciesGetCall) ClientOperationId(clientOperationId string) *ResponsePoliciesGetCall {
+	c.urlParams_.Set("clientOperationId", clientOperationId)
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *ResponsePoliciesGetCall) Fields(s ...googleapi.Field) *ResponsePoliciesGetCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// IfNoneMatch sets the optional parameter which makes the operation
+// fail if the object's ETag matches the given value. This is useful for
+// getting updates only after the object has changed since the last
+// request. Use googleapi.IsNotModified to check whether the response
+// error from Do is the result of In-None-Match.
+func (c *ResponsePoliciesGetCall) IfNoneMatch(entityTag string) *ResponsePoliciesGetCall {
+	c.ifNoneMatch_ = entityTag
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *ResponsePoliciesGetCall) Context(ctx context.Context) *ResponsePoliciesGetCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *ResponsePoliciesGetCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *ResponsePoliciesGetCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	if c.ifNoneMatch_ != "" {
+		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
+	}
+	var body io.Reader = nil
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("GET", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project":        c.project,
+		"responsePolicy": c.responsePolicy,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "dns.responsePolicies.get" call.
+// Exactly one of *ResponsePolicy or error will be non-nil. Any non-2xx
+// status code is an error. Response headers are in either
+// *ResponsePolicy.ServerResponse.Header or (if a response was returned
+// at all) in error.(*googleapi.Error).Header. Use
+// googleapi.IsNotModified to check whether the returned error was
+// because http.StatusNotModified was returned.
+func (c *ResponsePoliciesGetCall) Do(opts ...googleapi.CallOption) (*ResponsePolicy, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &ResponsePolicy{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Fetch the representation of an existing Response Policy.",
+	//   "flatPath": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}",
+	//   "httpMethod": "GET",
+	//   "id": "dns.responsePolicies.get",
+	//   "parameterOrder": [
+	//     "project",
+	//     "responsePolicy"
+	//   ],
+	//   "parameters": {
+	//     "clientOperationId": {
+	//       "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "project": {
+	//       "description": "Identifies the project addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "responsePolicy": {
+	//       "description": "User assigned name of the Response Policy addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}",
+	//   "response": {
+	//     "$ref": "ResponsePolicy"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/cloud-platform.read-only",
+	//     "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+	//     "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+	//   ]
+	// }
+
+}
+
+// method id "dns.responsePolicies.list":
+
+type ResponsePoliciesListCall struct {
+	s            *Service
+	project      string
+	urlParams_   gensupport.URLParams
+	ifNoneMatch_ string
+	ctx_         context.Context
+	header_      http.Header
+}
+
+// List: Enumerate all Response Policies associated with a project.
+func (r *ResponsePoliciesService) List(project string) *ResponsePoliciesListCall {
+	c := &ResponsePoliciesListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	return c
+}
+
+// MaxResults sets the optional parameter "maxResults": Maximum number
+// of results to be returned. If unspecified, the server decides how
+// many results to return.
+func (c *ResponsePoliciesListCall) MaxResults(maxResults int64) *ResponsePoliciesListCall {
+	c.urlParams_.Set("maxResults", fmt.Sprint(maxResults))
+	return c
+}
+
+// PageToken sets the optional parameter "pageToken": A tag returned by
+// a previous list request that was truncated. Use this parameter to
+// continue a previous list request.
+func (c *ResponsePoliciesListCall) PageToken(pageToken string) *ResponsePoliciesListCall {
+	c.urlParams_.Set("pageToken", pageToken)
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *ResponsePoliciesListCall) Fields(s ...googleapi.Field) *ResponsePoliciesListCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// IfNoneMatch sets the optional parameter which makes the operation
+// fail if the object's ETag matches the given value. This is useful for
+// getting updates only after the object has changed since the last
+// request. Use googleapi.IsNotModified to check whether the response
+// error from Do is the result of In-None-Match.
+func (c *ResponsePoliciesListCall) IfNoneMatch(entityTag string) *ResponsePoliciesListCall {
+	c.ifNoneMatch_ = entityTag
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *ResponsePoliciesListCall) Context(ctx context.Context) *ResponsePoliciesListCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *ResponsePoliciesListCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *ResponsePoliciesListCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	if c.ifNoneMatch_ != "" {
+		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
+	}
+	var body io.Reader = nil
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "dns/v1beta2/projects/{project}/responsePolicies")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("GET", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project": c.project,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "dns.responsePolicies.list" call.
+// Exactly one of *ResponsePoliciesListResponse or error will be
+// non-nil. Any non-2xx status code is an error. Response headers are in
+// either *ResponsePoliciesListResponse.ServerResponse.Header or (if a
+// response was returned at all) in error.(*googleapi.Error).Header. Use
+// googleapi.IsNotModified to check whether the returned error was
+// because http.StatusNotModified was returned.
+func (c *ResponsePoliciesListCall) Do(opts ...googleapi.CallOption) (*ResponsePoliciesListResponse, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &ResponsePoliciesListResponse{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Enumerate all Response Policies associated with a project.",
+	//   "flatPath": "dns/v1beta2/projects/{project}/responsePolicies",
+	//   "httpMethod": "GET",
+	//   "id": "dns.responsePolicies.list",
+	//   "parameterOrder": [
+	//     "project"
+	//   ],
+	//   "parameters": {
+	//     "maxResults": {
+	//       "description": "Optional. Maximum number of results to be returned. If unspecified, the server decides how many results to return.",
+	//       "format": "int32",
+	//       "location": "query",
+	//       "type": "integer"
+	//     },
+	//     "pageToken": {
+	//       "description": "Optional. A tag returned by a previous list request that was truncated. Use this parameter to continue a previous list request.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "project": {
+	//       "description": "Identifies the project addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "dns/v1beta2/projects/{project}/responsePolicies",
+	//   "response": {
+	//     "$ref": "ResponsePoliciesListResponse"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/cloud-platform.read-only",
+	//     "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+	//     "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+	//   ]
+	// }
+
+}
+
+// Pages invokes f for each page of results.
+// A non-nil error returned from f will halt the iteration.
+// The provided context supersedes any context provided to the Context method.
+func (c *ResponsePoliciesListCall) Pages(ctx context.Context, f func(*ResponsePoliciesListResponse) error) error {
+	c.ctx_ = ctx
+	defer c.PageToken(c.urlParams_.Get("pageToken")) // reset paging to original point
+	for {
+		x, err := c.Do()
+		if err != nil {
+			return err
+		}
+		if err := f(x); err != nil {
+			return err
+		}
+		if x.NextPageToken == "" {
+			return nil
+		}
+		c.PageToken(x.NextPageToken)
+	}
+}
+
+// method id "dns.responsePolicies.patch":
+
+type ResponsePoliciesPatchCall struct {
+	s              *Service
+	project        string
+	responsePolicy string
+	responsepolicy *ResponsePolicy
+	urlParams_     gensupport.URLParams
+	ctx_           context.Context
+	header_        http.Header
+}
+
+// Patch: Apply a partial update to an existing Response Policy.
+func (r *ResponsePoliciesService) Patch(project string, responsePolicy string, responsepolicy *ResponsePolicy) *ResponsePoliciesPatchCall {
+	c := &ResponsePoliciesPatchCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.responsePolicy = responsePolicy
+	c.responsepolicy = responsepolicy
+	return c
+}
+
+// ClientOperationId sets the optional parameter "clientOperationId":
+// For mutating operation requests only. An optional identifier
+// specified by the client. Must be unique for operation resources in
+// the Operations collection.
+func (c *ResponsePoliciesPatchCall) ClientOperationId(clientOperationId string) *ResponsePoliciesPatchCall {
+	c.urlParams_.Set("clientOperationId", clientOperationId)
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *ResponsePoliciesPatchCall) Fields(s ...googleapi.Field) *ResponsePoliciesPatchCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *ResponsePoliciesPatchCall) Context(ctx context.Context) *ResponsePoliciesPatchCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *ResponsePoliciesPatchCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *ResponsePoliciesPatchCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	body, err := googleapi.WithoutDataWrapper.JSONReader(c.responsepolicy)
+	if err != nil {
+		return nil, err
+	}
+	reqHeaders.Set("Content-Type", "application/json")
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("PATCH", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project":        c.project,
+		"responsePolicy": c.responsePolicy,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "dns.responsePolicies.patch" call.
+// Exactly one of *ResponsePoliciesPatchResponse or error will be
+// non-nil. Any non-2xx status code is an error. Response headers are in
+// either *ResponsePoliciesPatchResponse.ServerResponse.Header or (if a
+// response was returned at all) in error.(*googleapi.Error).Header. Use
+// googleapi.IsNotModified to check whether the returned error was
+// because http.StatusNotModified was returned.
+func (c *ResponsePoliciesPatchCall) Do(opts ...googleapi.CallOption) (*ResponsePoliciesPatchResponse, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &ResponsePoliciesPatchResponse{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Apply a partial update to an existing Response Policy.",
+	//   "flatPath": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}",
+	//   "httpMethod": "PATCH",
+	//   "id": "dns.responsePolicies.patch",
+	//   "parameterOrder": [
+	//     "project",
+	//     "responsePolicy"
+	//   ],
+	//   "parameters": {
+	//     "clientOperationId": {
+	//       "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "project": {
+	//       "description": "Identifies the project addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "responsePolicy": {
+	//       "description": "User assigned name of the Respones Policy addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}",
+	//   "request": {
+	//     "$ref": "ResponsePolicy"
+	//   },
+	//   "response": {
+	//     "$ref": "ResponsePoliciesPatchResponse"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+	//   ]
+	// }
+
+}
+
+// method id "dns.responsePolicies.update":
+
+type ResponsePoliciesUpdateCall struct {
+	s              *Service
+	project        string
+	responsePolicy string
+	responsepolicy *ResponsePolicy
+	urlParams_     gensupport.URLParams
+	ctx_           context.Context
+	header_        http.Header
+}
+
+// Update: Update an existing Response Policy.
+func (r *ResponsePoliciesService) Update(project string, responsePolicy string, responsepolicy *ResponsePolicy) *ResponsePoliciesUpdateCall {
+	c := &ResponsePoliciesUpdateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.responsePolicy = responsePolicy
+	c.responsepolicy = responsepolicy
+	return c
+}
+
+// ClientOperationId sets the optional parameter "clientOperationId":
+// For mutating operation requests only. An optional identifier
+// specified by the client. Must be unique for operation resources in
+// the Operations collection.
+func (c *ResponsePoliciesUpdateCall) ClientOperationId(clientOperationId string) *ResponsePoliciesUpdateCall {
+	c.urlParams_.Set("clientOperationId", clientOperationId)
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *ResponsePoliciesUpdateCall) Fields(s ...googleapi.Field) *ResponsePoliciesUpdateCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *ResponsePoliciesUpdateCall) Context(ctx context.Context) *ResponsePoliciesUpdateCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *ResponsePoliciesUpdateCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *ResponsePoliciesUpdateCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	body, err := googleapi.WithoutDataWrapper.JSONReader(c.responsepolicy)
+	if err != nil {
+		return nil, err
+	}
+	reqHeaders.Set("Content-Type", "application/json")
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("PUT", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project":        c.project,
+		"responsePolicy": c.responsePolicy,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "dns.responsePolicies.update" call.
+// Exactly one of *ResponsePoliciesUpdateResponse or error will be
+// non-nil. Any non-2xx status code is an error. Response headers are in
+// either *ResponsePoliciesUpdateResponse.ServerResponse.Header or (if a
+// response was returned at all) in error.(*googleapi.Error).Header. Use
+// googleapi.IsNotModified to check whether the returned error was
+// because http.StatusNotModified was returned.
+func (c *ResponsePoliciesUpdateCall) Do(opts ...googleapi.CallOption) (*ResponsePoliciesUpdateResponse, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &ResponsePoliciesUpdateResponse{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Update an existing Response Policy.",
+	//   "flatPath": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}",
+	//   "httpMethod": "PUT",
+	//   "id": "dns.responsePolicies.update",
+	//   "parameterOrder": [
+	//     "project",
+	//     "responsePolicy"
+	//   ],
+	//   "parameters": {
+	//     "clientOperationId": {
+	//       "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "project": {
+	//       "description": "Identifies the project addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "responsePolicy": {
+	//       "description": "User assigned name of the Response Policy addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}",
+	//   "request": {
+	//     "$ref": "ResponsePolicy"
+	//   },
+	//   "response": {
+	//     "$ref": "ResponsePoliciesUpdateResponse"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+	//   ]
+	// }
+
+}
+
+// method id "dns.responsePolicyRules.create":
+
+type ResponsePolicyRulesCreateCall struct {
+	s                  *Service
+	project            string
+	responsePolicy     string
+	responsepolicyrule *ResponsePolicyRule
+	urlParams_         gensupport.URLParams
+	ctx_               context.Context
+	header_            http.Header
+}
+
+// Create: Creates a new Response Policy Rule.
+func (r *ResponsePolicyRulesService) Create(project string, responsePolicy string, responsepolicyrule *ResponsePolicyRule) *ResponsePolicyRulesCreateCall {
+	c := &ResponsePolicyRulesCreateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.responsePolicy = responsePolicy
+	c.responsepolicyrule = responsepolicyrule
+	return c
+}
+
+// ClientOperationId sets the optional parameter "clientOperationId":
+// For mutating operation requests only. An optional identifier
+// specified by the client. Must be unique for operation resources in
+// the Operations collection.
+func (c *ResponsePolicyRulesCreateCall) ClientOperationId(clientOperationId string) *ResponsePolicyRulesCreateCall {
+	c.urlParams_.Set("clientOperationId", clientOperationId)
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *ResponsePolicyRulesCreateCall) Fields(s ...googleapi.Field) *ResponsePolicyRulesCreateCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *ResponsePolicyRulesCreateCall) Context(ctx context.Context) *ResponsePolicyRulesCreateCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *ResponsePolicyRulesCreateCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *ResponsePolicyRulesCreateCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	body, err := googleapi.WithoutDataWrapper.JSONReader(c.responsepolicyrule)
+	if err != nil {
+		return nil, err
+	}
+	reqHeaders.Set("Content-Type", "application/json")
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("POST", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project":        c.project,
+		"responsePolicy": c.responsePolicy,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "dns.responsePolicyRules.create" call.
+// Exactly one of *ResponsePolicyRule or error will be non-nil. Any
+// non-2xx status code is an error. Response headers are in either
+// *ResponsePolicyRule.ServerResponse.Header or (if a response was
+// returned at all) in error.(*googleapi.Error).Header. Use
+// googleapi.IsNotModified to check whether the returned error was
+// because http.StatusNotModified was returned.
+func (c *ResponsePolicyRulesCreateCall) Do(opts ...googleapi.CallOption) (*ResponsePolicyRule, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &ResponsePolicyRule{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Creates a new Response Policy Rule.",
+	//   "flatPath": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules",
+	//   "httpMethod": "POST",
+	//   "id": "dns.responsePolicyRules.create",
+	//   "parameterOrder": [
+	//     "project",
+	//     "responsePolicy"
+	//   ],
+	//   "parameters": {
+	//     "clientOperationId": {
+	//       "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "project": {
+	//       "description": "Identifies the project addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "responsePolicy": {
+	//       "description": "User assigned name of the Response Policy containing the Response Policy Rule.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules",
+	//   "request": {
+	//     "$ref": "ResponsePolicyRule"
+	//   },
+	//   "response": {
+	//     "$ref": "ResponsePolicyRule"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+	//   ]
+	// }
+
+}
+
+// method id "dns.responsePolicyRules.delete":
+
+type ResponsePolicyRulesDeleteCall struct {
+	s                  *Service
+	project            string
+	responsePolicy     string
+	responsePolicyRule string
+	urlParams_         gensupport.URLParams
+	ctx_               context.Context
+	header_            http.Header
+}
+
+// Delete: Delete a previously created Response Policy Rule.
+func (r *ResponsePolicyRulesService) Delete(project string, responsePolicy string, responsePolicyRule string) *ResponsePolicyRulesDeleteCall {
+	c := &ResponsePolicyRulesDeleteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.responsePolicy = responsePolicy
+	c.responsePolicyRule = responsePolicyRule
+	return c
+}
+
+// ClientOperationId sets the optional parameter "clientOperationId":
+// For mutating operation requests only. An optional identifier
+// specified by the client. Must be unique for operation resources in
+// the Operations collection.
+func (c *ResponsePolicyRulesDeleteCall) ClientOperationId(clientOperationId string) *ResponsePolicyRulesDeleteCall {
+	c.urlParams_.Set("clientOperationId", clientOperationId)
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *ResponsePolicyRulesDeleteCall) Fields(s ...googleapi.Field) *ResponsePolicyRulesDeleteCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *ResponsePolicyRulesDeleteCall) Context(ctx context.Context) *ResponsePolicyRulesDeleteCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *ResponsePolicyRulesDeleteCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *ResponsePolicyRulesDeleteCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("DELETE", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project":            c.project,
+		"responsePolicy":     c.responsePolicy,
+		"responsePolicyRule": c.responsePolicyRule,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "dns.responsePolicyRules.delete" call.
+func (c *ResponsePolicyRulesDeleteCall) Do(opts ...googleapi.CallOption) error {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if err != nil {
+		return err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return err
+	}
+	return nil
+	// {
+	//   "description": "Delete a previously created Response Policy Rule.",
+	//   "flatPath": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
+	//   "httpMethod": "DELETE",
+	//   "id": "dns.responsePolicyRules.delete",
+	//   "parameterOrder": [
+	//     "project",
+	//     "responsePolicy",
+	//     "responsePolicyRule"
+	//   ],
+	//   "parameters": {
+	//     "clientOperationId": {
+	//       "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "project": {
+	//       "description": "Identifies the project addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "responsePolicy": {
+	//       "description": "User assigned name of the Response Policy containing the Response Policy Rule.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "responsePolicyRule": {
+	//       "description": "User assigned name of the Response Policy Rule addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+	//   ]
+	// }
+
+}
+
+// method id "dns.responsePolicyRules.get":
+
+type ResponsePolicyRulesGetCall struct {
+	s                  *Service
+	project            string
+	responsePolicy     string
+	responsePolicyRule string
+	urlParams_         gensupport.URLParams
+	ifNoneMatch_       string
+	ctx_               context.Context
+	header_            http.Header
+}
+
+// Get: Fetch the representation of an existing Response Policy Rule.
+func (r *ResponsePolicyRulesService) Get(project string, responsePolicy string, responsePolicyRule string) *ResponsePolicyRulesGetCall {
+	c := &ResponsePolicyRulesGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.responsePolicy = responsePolicy
+	c.responsePolicyRule = responsePolicyRule
+	return c
+}
+
+// ClientOperationId sets the optional parameter "clientOperationId":
+// For mutating operation requests only. An optional identifier
+// specified by the client. Must be unique for operation resources in
+// the Operations collection.
+func (c *ResponsePolicyRulesGetCall) ClientOperationId(clientOperationId string) *ResponsePolicyRulesGetCall {
+	c.urlParams_.Set("clientOperationId", clientOperationId)
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *ResponsePolicyRulesGetCall) Fields(s ...googleapi.Field) *ResponsePolicyRulesGetCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// IfNoneMatch sets the optional parameter which makes the operation
+// fail if the object's ETag matches the given value. This is useful for
+// getting updates only after the object has changed since the last
+// request. Use googleapi.IsNotModified to check whether the response
+// error from Do is the result of In-None-Match.
+func (c *ResponsePolicyRulesGetCall) IfNoneMatch(entityTag string) *ResponsePolicyRulesGetCall {
+	c.ifNoneMatch_ = entityTag
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *ResponsePolicyRulesGetCall) Context(ctx context.Context) *ResponsePolicyRulesGetCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *ResponsePolicyRulesGetCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *ResponsePolicyRulesGetCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	if c.ifNoneMatch_ != "" {
+		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
+	}
+	var body io.Reader = nil
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("GET", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project":            c.project,
+		"responsePolicy":     c.responsePolicy,
+		"responsePolicyRule": c.responsePolicyRule,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "dns.responsePolicyRules.get" call.
+// Exactly one of *ResponsePolicyRule or error will be non-nil. Any
+// non-2xx status code is an error. Response headers are in either
+// *ResponsePolicyRule.ServerResponse.Header or (if a response was
+// returned at all) in error.(*googleapi.Error).Header. Use
+// googleapi.IsNotModified to check whether the returned error was
+// because http.StatusNotModified was returned.
+func (c *ResponsePolicyRulesGetCall) Do(opts ...googleapi.CallOption) (*ResponsePolicyRule, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &ResponsePolicyRule{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Fetch the representation of an existing Response Policy Rule.",
+	//   "flatPath": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
+	//   "httpMethod": "GET",
+	//   "id": "dns.responsePolicyRules.get",
+	//   "parameterOrder": [
+	//     "project",
+	//     "responsePolicy",
+	//     "responsePolicyRule"
+	//   ],
+	//   "parameters": {
+	//     "clientOperationId": {
+	//       "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "project": {
+	//       "description": "Identifies the project addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "responsePolicy": {
+	//       "description": "User assigned name of the Response Policy containing the Response Policy Rule.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "responsePolicyRule": {
+	//       "description": "User assigned name of the Response Policy Rule addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
+	//   "response": {
+	//     "$ref": "ResponsePolicyRule"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/cloud-platform.read-only",
+	//     "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+	//     "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+	//   ]
+	// }
+
+}
+
+// method id "dns.responsePolicyRules.list":
+
+type ResponsePolicyRulesListCall struct {
+	s              *Service
+	project        string
+	responsePolicy string
+	urlParams_     gensupport.URLParams
+	ifNoneMatch_   string
+	ctx_           context.Context
+	header_        http.Header
+}
+
+// List: Enumerate all Response Policy Rules associated with a project.
+func (r *ResponsePolicyRulesService) List(project string, responsePolicy string) *ResponsePolicyRulesListCall {
+	c := &ResponsePolicyRulesListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.responsePolicy = responsePolicy
+	return c
+}
+
+// MaxResults sets the optional parameter "maxResults": Maximum number
+// of results to be returned. If unspecified, the server decides how
+// many results to return.
+func (c *ResponsePolicyRulesListCall) MaxResults(maxResults int64) *ResponsePolicyRulesListCall {
+	c.urlParams_.Set("maxResults", fmt.Sprint(maxResults))
+	return c
+}
+
+// PageToken sets the optional parameter "pageToken": A tag returned by
+// a previous list request that was truncated. Use this parameter to
+// continue a previous list request.
+func (c *ResponsePolicyRulesListCall) PageToken(pageToken string) *ResponsePolicyRulesListCall {
+	c.urlParams_.Set("pageToken", pageToken)
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *ResponsePolicyRulesListCall) Fields(s ...googleapi.Field) *ResponsePolicyRulesListCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// IfNoneMatch sets the optional parameter which makes the operation
+// fail if the object's ETag matches the given value. This is useful for
+// getting updates only after the object has changed since the last
+// request. Use googleapi.IsNotModified to check whether the response
+// error from Do is the result of In-None-Match.
+func (c *ResponsePolicyRulesListCall) IfNoneMatch(entityTag string) *ResponsePolicyRulesListCall {
+	c.ifNoneMatch_ = entityTag
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *ResponsePolicyRulesListCall) Context(ctx context.Context) *ResponsePolicyRulesListCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *ResponsePolicyRulesListCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *ResponsePolicyRulesListCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	if c.ifNoneMatch_ != "" {
+		reqHeaders.Set("If-None-Match", c.ifNoneMatch_)
+	}
+	var body io.Reader = nil
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("GET", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project":        c.project,
+		"responsePolicy": c.responsePolicy,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "dns.responsePolicyRules.list" call.
+// Exactly one of *ResponsePolicyRulesListResponse or error will be
+// non-nil. Any non-2xx status code is an error. Response headers are in
+// either *ResponsePolicyRulesListResponse.ServerResponse.Header or (if
+// a response was returned at all) in error.(*googleapi.Error).Header.
+// Use googleapi.IsNotModified to check whether the returned error was
+// because http.StatusNotModified was returned.
+func (c *ResponsePolicyRulesListCall) Do(opts ...googleapi.CallOption) (*ResponsePolicyRulesListResponse, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &ResponsePolicyRulesListResponse{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Enumerate all Response Policy Rules associated with a project.",
+	//   "flatPath": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules",
+	//   "httpMethod": "GET",
+	//   "id": "dns.responsePolicyRules.list",
+	//   "parameterOrder": [
+	//     "project",
+	//     "responsePolicy"
+	//   ],
+	//   "parameters": {
+	//     "maxResults": {
+	//       "description": "Optional. Maximum number of results to be returned. If unspecified, the server decides how many results to return.",
+	//       "format": "int32",
+	//       "location": "query",
+	//       "type": "integer"
+	//     },
+	//     "pageToken": {
+	//       "description": "Optional. A tag returned by a previous list request that was truncated. Use this parameter to continue a previous list request.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "project": {
+	//       "description": "Identifies the project addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "responsePolicy": {
+	//       "description": "User assigned name of the Response Policy to list.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules",
+	//   "response": {
+	//     "$ref": "ResponsePolicyRulesListResponse"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/cloud-platform.read-only",
+	//     "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+	//     "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+	//   ]
+	// }
+
+}
+
+// Pages invokes f for each page of results.
+// A non-nil error returned from f will halt the iteration.
+// The provided context supersedes any context provided to the Context method.
+func (c *ResponsePolicyRulesListCall) Pages(ctx context.Context, f func(*ResponsePolicyRulesListResponse) error) error {
+	c.ctx_ = ctx
+	defer c.PageToken(c.urlParams_.Get("pageToken")) // reset paging to original point
+	for {
+		x, err := c.Do()
+		if err != nil {
+			return err
+		}
+		if err := f(x); err != nil {
+			return err
+		}
+		if x.NextPageToken == "" {
+			return nil
+		}
+		c.PageToken(x.NextPageToken)
+	}
+}
+
+// method id "dns.responsePolicyRules.patch":
+
+type ResponsePolicyRulesPatchCall struct {
+	s                  *Service
+	project            string
+	responsePolicy     string
+	responsePolicyRule string
+	responsepolicyrule *ResponsePolicyRule
+	urlParams_         gensupport.URLParams
+	ctx_               context.Context
+	header_            http.Header
+}
+
+// Patch: Apply a partial update to an existing Response Policy Rule.
+func (r *ResponsePolicyRulesService) Patch(project string, responsePolicy string, responsePolicyRule string, responsepolicyrule *ResponsePolicyRule) *ResponsePolicyRulesPatchCall {
+	c := &ResponsePolicyRulesPatchCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.responsePolicy = responsePolicy
+	c.responsePolicyRule = responsePolicyRule
+	c.responsepolicyrule = responsepolicyrule
+	return c
+}
+
+// ClientOperationId sets the optional parameter "clientOperationId":
+// For mutating operation requests only. An optional identifier
+// specified by the client. Must be unique for operation resources in
+// the Operations collection.
+func (c *ResponsePolicyRulesPatchCall) ClientOperationId(clientOperationId string) *ResponsePolicyRulesPatchCall {
+	c.urlParams_.Set("clientOperationId", clientOperationId)
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *ResponsePolicyRulesPatchCall) Fields(s ...googleapi.Field) *ResponsePolicyRulesPatchCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *ResponsePolicyRulesPatchCall) Context(ctx context.Context) *ResponsePolicyRulesPatchCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *ResponsePolicyRulesPatchCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *ResponsePolicyRulesPatchCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	body, err := googleapi.WithoutDataWrapper.JSONReader(c.responsepolicyrule)
+	if err != nil {
+		return nil, err
+	}
+	reqHeaders.Set("Content-Type", "application/json")
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("PATCH", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project":            c.project,
+		"responsePolicy":     c.responsePolicy,
+		"responsePolicyRule": c.responsePolicyRule,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "dns.responsePolicyRules.patch" call.
+// Exactly one of *ResponsePolicyRulesPatchResponse or error will be
+// non-nil. Any non-2xx status code is an error. Response headers are in
+// either *ResponsePolicyRulesPatchResponse.ServerResponse.Header or (if
+// a response was returned at all) in error.(*googleapi.Error).Header.
+// Use googleapi.IsNotModified to check whether the returned error was
+// because http.StatusNotModified was returned.
+func (c *ResponsePolicyRulesPatchCall) Do(opts ...googleapi.CallOption) (*ResponsePolicyRulesPatchResponse, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &ResponsePolicyRulesPatchResponse{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Apply a partial update to an existing Response Policy Rule.",
+	//   "flatPath": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
+	//   "httpMethod": "PATCH",
+	//   "id": "dns.responsePolicyRules.patch",
+	//   "parameterOrder": [
+	//     "project",
+	//     "responsePolicy",
+	//     "responsePolicyRule"
+	//   ],
+	//   "parameters": {
+	//     "clientOperationId": {
+	//       "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "project": {
+	//       "description": "Identifies the project addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "responsePolicy": {
+	//       "description": "User assigned name of the Response Policy containing the Response Policy Rule.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "responsePolicyRule": {
+	//       "description": "User assigned name of the Response Policy Rule addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
+	//   "request": {
+	//     "$ref": "ResponsePolicyRule"
+	//   },
+	//   "response": {
+	//     "$ref": "ResponsePolicyRulesPatchResponse"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+	//   ]
+	// }
+
+}
+
+// method id "dns.responsePolicyRules.update":
+
+type ResponsePolicyRulesUpdateCall struct {
+	s                  *Service
+	project            string
+	responsePolicy     string
+	responsePolicyRule string
+	responsepolicyrule *ResponsePolicyRule
+	urlParams_         gensupport.URLParams
+	ctx_               context.Context
+	header_            http.Header
+}
+
+// Update: Update an existing Response Policy Rule.
+func (r *ResponsePolicyRulesService) Update(project string, responsePolicy string, responsePolicyRule string, responsepolicyrule *ResponsePolicyRule) *ResponsePolicyRulesUpdateCall {
+	c := &ResponsePolicyRulesUpdateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.project = project
+	c.responsePolicy = responsePolicy
+	c.responsePolicyRule = responsePolicyRule
+	c.responsepolicyrule = responsepolicyrule
+	return c
+}
+
+// ClientOperationId sets the optional parameter "clientOperationId":
+// For mutating operation requests only. An optional identifier
+// specified by the client. Must be unique for operation resources in
+// the Operations collection.
+func (c *ResponsePolicyRulesUpdateCall) ClientOperationId(clientOperationId string) *ResponsePolicyRulesUpdateCall {
+	c.urlParams_.Set("clientOperationId", clientOperationId)
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *ResponsePolicyRulesUpdateCall) Fields(s ...googleapi.Field) *ResponsePolicyRulesUpdateCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *ResponsePolicyRulesUpdateCall) Context(ctx context.Context) *ResponsePolicyRulesUpdateCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *ResponsePolicyRulesUpdateCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *ResponsePolicyRulesUpdateCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	body, err := googleapi.WithoutDataWrapper.JSONReader(c.responsepolicyrule)
+	if err != nil {
+		return nil, err
+	}
+	reqHeaders.Set("Content-Type", "application/json")
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("PUT", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	googleapi.Expand(req.URL, map[string]string{
+		"project":            c.project,
+		"responsePolicy":     c.responsePolicy,
+		"responsePolicyRule": c.responsePolicyRule,
+	})
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "dns.responsePolicyRules.update" call.
+// Exactly one of *ResponsePolicyRulesUpdateResponse or error will be
+// non-nil. Any non-2xx status code is an error. Response headers are in
+// either *ResponsePolicyRulesUpdateResponse.ServerResponse.Header or
+// (if a response was returned at all) in
+// error.(*googleapi.Error).Header. Use googleapi.IsNotModified to check
+// whether the returned error was because http.StatusNotModified was
+// returned.
+func (c *ResponsePolicyRulesUpdateCall) Do(opts ...googleapi.CallOption) (*ResponsePolicyRulesUpdateResponse, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &ResponsePolicyRulesUpdateResponse{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Update an existing Response Policy Rule.",
+	//   "flatPath": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
+	//   "httpMethod": "PUT",
+	//   "id": "dns.responsePolicyRules.update",
+	//   "parameterOrder": [
+	//     "project",
+	//     "responsePolicy",
+	//     "responsePolicyRule"
+	//   ],
+	//   "parameters": {
+	//     "clientOperationId": {
+	//       "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+	//       "location": "query",
+	//       "type": "string"
+	//     },
+	//     "project": {
+	//       "description": "Identifies the project addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "responsePolicy": {
+	//       "description": "User assigned name of the Response Policy containing the Response Policy Rule.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     },
+	//     "responsePolicyRule": {
+	//       "description": "User assigned name of the Response Policy Rule addressed by this request.",
+	//       "location": "path",
+	//       "required": true,
+	//       "type": "string"
+	//     }
+	//   },
+	//   "path": "dns/v1beta2/projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
+	//   "request": {
+	//     "$ref": "ResponsePolicyRule"
+	//   },
+	//   "response": {
+	//     "$ref": "ResponsePolicyRulesUpdateResponse"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/cloud-platform",
+	//     "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+	//   ]
+	// }
+
 }

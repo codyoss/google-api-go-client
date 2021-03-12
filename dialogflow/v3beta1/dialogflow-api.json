@@ -399,7 +399,7 @@
                       ],
                       "parameters": {
                         "languageCode": {
-                          "description": "The language of the following fields in `entity_type`: * `EntityType.entities.value` * `EntityType.entities.synonyms` * `EntityType.excluded_phrases.value` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                          "description": "The language of the following fields in `entity_type`: * `EntityType.entities.value` * `EntityType.entities.synonyms` * `EntityType.excluded_phrases.value` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                           "location": "query",
                           "type": "string"
                         },
@@ -464,7 +464,7 @@
                       ],
                       "parameters": {
                         "languageCode": {
-                          "description": "The language to retrieve the entity type for. The following fields are language dependent: * `EntityType.entities.value` * `EntityType.entities.synonyms` * `EntityType.excluded_phrases.value` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                          "description": "The language to retrieve the entity type for. The following fields are language dependent: * `EntityType.entities.value` * `EntityType.entities.synonyms` * `EntityType.excluded_phrases.value` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                           "location": "query",
                           "type": "string"
                         },
@@ -495,7 +495,7 @@
                       ],
                       "parameters": {
                         "languageCode": {
-                          "description": "The language to list entity types for. The following fields are language dependent: * `EntityType.entities.value` * `EntityType.entities.synonyms` * `EntityType.excluded_phrases.value` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                          "description": "The language to list entity types for. The following fields are language dependent: * `EntityType.entities.value` * `EntityType.entities.synonyms` * `EntityType.excluded_phrases.value` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                           "location": "query",
                           "type": "string"
                         },
@@ -537,7 +537,7 @@
                       ],
                       "parameters": {
                         "languageCode": {
-                          "description": "The language of the following fields in `entity_type`: * `EntityType.entities.value` * `EntityType.entities.synonyms` * `EntityType.excluded_phrases.value` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                          "description": "The language of the following fields in `entity_type`: * `EntityType.entities.value` * `EntityType.entities.synonyms` * `EntityType.excluded_phrases.value` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                           "location": "query",
                           "type": "string"
                         },
@@ -1242,7 +1242,7 @@
                       ],
                       "parameters": {
                         "languageCode": {
-                          "description": "The language of the following fields in `flow`: * `Flow.event_handlers.trigger_fulfillment.messages` * `Flow.transition_routes.trigger_fulfillment.messages` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                          "description": "The language of the following fields in `flow`: * `Flow.event_handlers.trigger_fulfillment.messages` * `Flow.transition_routes.trigger_fulfillment.messages` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                           "location": "query",
                           "type": "string"
                         },
@@ -1307,7 +1307,7 @@
                       ],
                       "parameters": {
                         "languageCode": {
-                          "description": "The language to retrieve the flow for. The following fields are language dependent: * `Flow.event_handlers.trigger_fulfillment.messages` * `Flow.transition_routes.trigger_fulfillment.messages` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                          "description": "The language to retrieve the flow for. The following fields are language dependent: * `Flow.event_handlers.trigger_fulfillment.messages` * `Flow.transition_routes.trigger_fulfillment.messages` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                           "location": "query",
                           "type": "string"
                         },
@@ -1369,7 +1369,7 @@
                       ],
                       "parameters": {
                         "languageCode": {
-                          "description": "The language to list flows for. The following fields are language dependent: * `Flow.event_handlers.trigger_fulfillment.messages` * `Flow.transition_routes.trigger_fulfillment.messages` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                          "description": "The language to list flows for. The following fields are language dependent: * `Flow.event_handlers.trigger_fulfillment.messages` * `Flow.transition_routes.trigger_fulfillment.messages` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                           "location": "query",
                           "type": "string"
                         },
@@ -1411,7 +1411,7 @@
                       ],
                       "parameters": {
                         "languageCode": {
-                          "description": "The language of the following fields in `flow`: * `Flow.event_handlers.trigger_fulfillment.messages` * `Flow.transition_routes.trigger_fulfillment.messages` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                          "description": "The language of the following fields in `flow`: * `Flow.event_handlers.trigger_fulfillment.messages` * `Flow.transition_routes.trigger_fulfillment.messages` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                           "location": "query",
                           "type": "string"
                         },
@@ -1513,7 +1513,7 @@
                           ],
                           "parameters": {
                             "languageCode": {
-                              "description": "The language of the following fields in `page`: * `Page.entry_fulfillment.messages` * `Page.form.parameters.fill_behavior.initial_prompt_fulfillment.messages` * `Page.form.parameters.fill_behavior.reprompt_event_handlers.messages` * `Page.transition_routes.trigger_fulfillment.messages` * `Page.transition_route_groups.transition_routes.trigger_fulfillment.messages` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                              "description": "The language of the following fields in `page`: * `Page.entry_fulfillment.messages` * `Page.form.parameters.fill_behavior.initial_prompt_fulfillment.messages` * `Page.form.parameters.fill_behavior.reprompt_event_handlers.messages` * `Page.transition_routes.trigger_fulfillment.messages` * `Page.transition_route_groups.transition_routes.trigger_fulfillment.messages` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                               "location": "query",
                               "type": "string"
                             },
@@ -1578,7 +1578,7 @@
                           ],
                           "parameters": {
                             "languageCode": {
-                              "description": "The language to retrieve the page for. The following fields are language dependent: * `Page.entry_fulfillment.messages` * `Page.form.parameters.fill_behavior.initial_prompt_fulfillment.messages` * `Page.form.parameters.fill_behavior.reprompt_event_handlers.messages` * `Page.transition_routes.trigger_fulfillment.messages` * `Page.transition_route_groups.transition_routes.trigger_fulfillment.messages` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                              "description": "The language to retrieve the page for. The following fields are language dependent: * `Page.entry_fulfillment.messages` * `Page.form.parameters.fill_behavior.initial_prompt_fulfillment.messages` * `Page.form.parameters.fill_behavior.reprompt_event_handlers.messages` * `Page.transition_routes.trigger_fulfillment.messages` * `Page.transition_route_groups.transition_routes.trigger_fulfillment.messages` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                               "location": "query",
                               "type": "string"
                             },
@@ -1609,7 +1609,7 @@
                           ],
                           "parameters": {
                             "languageCode": {
-                              "description": "The language to list pages for. The following fields are language dependent: * `Page.entry_fulfillment.messages` * `Page.form.parameters.fill_behavior.initial_prompt_fulfillment.messages` * `Page.form.parameters.fill_behavior.reprompt_event_handlers.messages` * `Page.transition_routes.trigger_fulfillment.messages` * `Page.transition_route_groups.transition_routes.trigger_fulfillment.messages` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                              "description": "The language to list pages for. The following fields are language dependent: * `Page.entry_fulfillment.messages` * `Page.form.parameters.fill_behavior.initial_prompt_fulfillment.messages` * `Page.form.parameters.fill_behavior.reprompt_event_handlers.messages` * `Page.transition_routes.trigger_fulfillment.messages` * `Page.transition_route_groups.transition_routes.trigger_fulfillment.messages` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                               "location": "query",
                               "type": "string"
                             },
@@ -1651,7 +1651,7 @@
                           ],
                           "parameters": {
                             "languageCode": {
-                              "description": "The language of the following fields in `page`: * `Page.entry_fulfillment.messages` * `Page.form.parameters.fill_behavior.initial_prompt_fulfillment.messages` * `Page.form.parameters.fill_behavior.reprompt_event_handlers.messages` * `Page.transition_routes.trigger_fulfillment.messages` * `Page.transition_route_groups.transition_routes.trigger_fulfillment.messages` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                              "description": "The language of the following fields in `page`: * `Page.entry_fulfillment.messages` * `Page.form.parameters.fill_behavior.initial_prompt_fulfillment.messages` * `Page.form.parameters.fill_behavior.reprompt_event_handlers.messages` * `Page.transition_routes.trigger_fulfillment.messages` * `Page.transition_route_groups.transition_routes.trigger_fulfillment.messages` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                               "location": "query",
                               "type": "string"
                             },
@@ -1695,7 +1695,7 @@
                           ],
                           "parameters": {
                             "languageCode": {
-                              "description": "The language to list transition route groups for. The field `messages` in TransitionRoute is language dependent. If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                              "description": "The language to list transition route groups for. The field `messages` in TransitionRoute is language dependent. If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                               "location": "query",
                               "type": "string"
                             },
@@ -1760,7 +1760,7 @@
                           ],
                           "parameters": {
                             "languageCode": {
-                              "description": "The language to list transition route groups for. The field `messages` in TransitionRoute is language dependent. If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                              "description": "The language to list transition route groups for. The field `messages` in TransitionRoute is language dependent. If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                               "location": "query",
                               "type": "string"
                             },
@@ -1791,7 +1791,7 @@
                           ],
                           "parameters": {
                             "languageCode": {
-                              "description": "The language to list transition route groups for. The field `messages` in TransitionRoute is language dependent. If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                              "description": "The language to list transition route groups for. The field `messages` in TransitionRoute is language dependent. If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                               "location": "query",
                               "type": "string"
                             },
@@ -1833,7 +1833,7 @@
                           ],
                           "parameters": {
                             "languageCode": {
-                              "description": "The language to list transition route groups for. The field `messages` in TransitionRoute is language dependent. If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                              "description": "The language to list transition route groups for. The field `messages` in TransitionRoute is language dependent. If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                               "location": "query",
                               "type": "string"
                             },
@@ -2065,7 +2065,7 @@
                       ],
                       "parameters": {
                         "languageCode": {
-                          "description": "The language of the following fields in `intent`: * `Intent.training_phrases.parts.text` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                          "description": "The language of the following fields in `intent`: * `Intent.training_phrases.parts.text` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                           "location": "query",
                           "type": "string"
                         },
@@ -2125,7 +2125,7 @@
                       ],
                       "parameters": {
                         "languageCode": {
-                          "description": "The language to retrieve the intent for. The following fields are language dependent: * `Intent.training_phrases.parts.text` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                          "description": "The language to retrieve the intent for. The following fields are language dependent: * `Intent.training_phrases.parts.text` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                           "location": "query",
                           "type": "string"
                         },
@@ -2171,7 +2171,7 @@
                           "type": "string"
                         },
                         "languageCode": {
-                          "description": "The language to list intents for. The following fields are language dependent: * `Intent.training_phrases.parts.text` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                          "description": "The language to list intents for. The following fields are language dependent: * `Intent.training_phrases.parts.text` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                           "location": "query",
                           "type": "string"
                         },
@@ -2213,7 +2213,7 @@
                       ],
                       "parameters": {
                         "languageCode": {
-                          "description": "The language of the following fields in `intent`: * `Intent.training_phrases.parts.text` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
+                          "description": "The language of the following fields in `intent`: * `Intent.training_phrases.parts.text` If not specified, the agent's default language is used. [Many languages](https://cloud.google.com/dialogflow/cx/docs/reference/language) are supported. Note: languages must be enabled in the agent before they can be used.",
                           "location": "query",
                           "type": "string"
                         },
@@ -2576,12 +2576,14 @@
                           "enum": [
                             "COVERAGE_TYPE_UNSPECIFIED",
                             "INTENT",
-                            "PAGE_TRANSITION"
+                            "PAGE_TRANSITION",
+                            "TRANSITION_ROUTE_GROUP"
                           ],
                           "enumDescriptions": [
                             "Should never be used.",
                             "Intent coverage.",
-                            "Page transition coverage"
+                            "Page transition coverage.",
+                            "Transition route group coverage."
                           ],
                           "location": "query",
                           "type": "string"
@@ -2778,7 +2780,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Required. The mask to specify which fields should be updated. Only a test case's metadata and replayed_conversation_turns may be updated. The original test_case_conversation_turns may not be updated.",
+                          "description": "Required. The mask to specify which fields should be updated. The `creationTime` and `lastTestResult` cannot be updated.",
                           "format": "google-fieldmask",
                           "location": "query",
                           "type": "string"
@@ -2798,32 +2800,22 @@
                     },
                     "run": {
                       "description": "Kicks off a test case run.",
-                      "flatPath": "v3beta1/projects/{projectsId}/locations/{locationsId}/agents/{agentsId}/testCases:run",
+                      "flatPath": "v3beta1/projects/{projectsId}/locations/{locationsId}/agents/{agentsId}/testCases/{testCasesId}:run",
                       "httpMethod": "POST",
                       "id": "dialogflow.projects.locations.agents.testCases.run",
                       "parameterOrder": [
-                        "projectsId",
-                        "locationsId",
-                        "agentsId"
+                        "name"
                       ],
                       "parameters": {
-                        "agentsId": {
+                        "name": {
+                          "description": "Required. Format of test case name to run: `projects//locations/ /agents//testCases/`.",
                           "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "locationsId": {
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "projectsId": {
-                          "location": "path",
+                          "pattern": "^projects/[^/]+/locations/[^/]+/agents/[^/]+/testCases/[^/]+$",
                           "required": true,
                           "type": "string"
                         }
                       },
-                      "path": "v3beta1/projects/{projectsId}/locations/{locationsId}/agents/{agentsId}/testCases:run",
+                      "path": "v3beta1/{+name}:run",
                       "request": {
                         "$ref": "GoogleCloudDialogflowCxV3beta1RunTestCaseRequest"
                       },
@@ -3407,7 +3399,7 @@
       }
     }
   },
-  "revision": "20210108",
+  "revision": "20210307",
   "rootUrl": "https://dialogflow.googleapis.com/",
   "schemas": {
     "GoogleCloudDialogflowCxV3AudioInput": {
@@ -3498,7 +3490,7 @@
       "properties": {
         "currentPage": {
           "$ref": "GoogleCloudDialogflowCxV3Page",
-          "description": "The Page on which the utterance was spoken. Only some fields such as name and displayname will be set."
+          "description": "The Page on which the utterance was spoken. Only name and displayName will be set."
         },
         "diagnosticInfo": {
           "additionalProperties": {
@@ -3537,7 +3529,7 @@
         },
         "triggeredIntent": {
           "$ref": "GoogleCloudDialogflowCxV3Intent",
-          "description": "The Intent that triggered the response. Only some fields such as name and displayname will be set."
+          "description": "The Intent that triggered the response. Only name and displayName will be set."
         }
       },
       "type": "object"
@@ -3706,7 +3698,7 @@
           "type": "boolean"
         },
         "redact": {
-          "description": "Indicates whether the parameter content is logged in text and audio. If it is set to true, the parameter content will be replaced to parameter name in both request and response. The default value is false.",
+          "description": "Indicates whether the parameter content should be redacted in log. If redaction is enabled, the parameter content will be replaced by parameter name during logging. Note: the parameter content is subject to redaction if either parameter level redaction or entity type level redaction is enabled.",
           "type": "boolean"
         },
         "required": {
@@ -4057,7 +4049,7 @@
           "type": "boolean"
         },
         "redact": {
-          "description": "Indicates whether the parameter content is logged in text and audio. If it is set to true, the parameter content will be replaced to parameter id in both request and response. The default value is false.",
+          "description": "Indicates whether the parameter content should be redacted in log. If redaction is enabled, the parameter content will be replaced by parameter name during logging. Note: the parameter content is subject to redaction if either parameter level redaction or entity type level redaction is enabled.",
           "type": "boolean"
         }
       },
@@ -4136,7 +4128,7 @@
           "type": "array"
         },
         "transitionRoutes": {
-          "description": "A list of transitions for the transition rules of this page. They route the conversation to another page in the same flow, or another flow. When we are in a certain page, the TransitionRoutes are evalauted in the following order: * TransitionRoutes defined in the page with intent specified. * TransitionRoutes defined in the transition route groups with intent specified. * TransitionRoutes defined in flow with intent specified. * TransitionRoutes defined in the page with only condition specified. * TransitionRoutes defined in the transition route groups with only condition specified.",
+          "description": "A list of transitions for the transition rules of this page. They route the conversation to another page in the same flow, or another flow. When we are in a certain page, the TransitionRoutes are evalauted in the following order: * TransitionRoutes defined in the page with intent specified. * TransitionRoutes defined in the transition route groups with intent specified. * TransitionRoutes defined in flow with intent specified. * TransitionRoutes defined in the transition route groups with intent specified. * TransitionRoutes defined in the page with only condition specified. * TransitionRoutes defined in the transition route groups with only condition specified.",
           "items": {
             "$ref": "GoogleCloudDialogflowCxV3TransitionRoute"
           },
@@ -4234,7 +4226,7 @@
           "description": "The intent to be triggered."
         },
         "languageCode": {
-          "description": "Required. The language of the input. See [Language Support](https://cloud.google.com/dialogflow/docs/reference/language) for a list of the currently supported language codes. Note that queries in the same session do not necessarily need to specify the same language.",
+          "description": "Required. The language of the input. See [Language Support](https://cloud.google.com/dialogflow/cx/docs/reference/language) for a list of the currently supported language codes. Note that queries in the same session do not necessarily need to specify the same language.",
           "type": "string"
         },
         "text": {
@@ -4265,7 +4257,7 @@
         },
         "endInteraction": {
           "$ref": "GoogleCloudDialogflowCxV3ResponseMessageEndInteraction",
-          "description": "Output only. A signal that indicates the interaction with the Dialogflow agent has ended. This message is generated by Dialogflow only when the conversation reaches `END_SESSION` or `END_PAGE` page. It is not supposed to be defined by the user. It's guaranteed that there is at most one such message in each response.",
+          "description": "Output only. A signal that indicates the interaction with the Dialogflow agent has ended. This message is generated by Dialogflow only when the conversation reaches `END_SESSION` page. It is not supposed to be defined by the user. It's guaranteed that there is at most one such message in each response.",
           "readOnly": true
         },
         "liveAgentHandoff": {
@@ -4535,7 +4527,7 @@
           "type": "array"
         },
         "environment": {
-          "description": "Optional. Environment where the test was run. If not set, it indicates the draft environment.",
+          "description": "Environment where the test was run. If not set, it indicates the draft environment.",
           "type": "string"
         },
         "name": {
@@ -4720,6 +4712,10 @@
           "description": "Custom data set in QueryParameters.payload.",
           "type": "object"
         },
+        "sentimentAnalysisResult": {
+          "$ref": "GoogleCloudDialogflowCxV3WebhookRequestSentimentAnalysisResult",
+          "description": "The sentiment analysis result of the current user request. The field is filled when sentiment analysis is configured to be enabled for the request."
+        },
         "sessionInfo": {
           "$ref": "GoogleCloudDialogflowCxV3SessionInfo",
           "description": "Information about session status."
@@ -4742,6 +4738,15 @@
       "description": "Represents intent information communicated to the webhook.",
       "id": "GoogleCloudDialogflowCxV3WebhookRequestIntentInfo",
       "properties": {
+        "confidence": {
+          "description": "The confidence of the matched intent. Values range from 0.0 (completely uncertain) to 1.0 (completely certain).",
+          "format": "float",
+          "type": "number"
+        },
+        "displayName": {
+          "description": "Always present. The display name of the last matched intent.",
+          "type": "string"
+        },
         "lastMatchedIntent": {
           "description": "Always present. The unique identifier of the last matched intent. Format: `projects//locations//agents//intents/`.",
           "type": "string"
@@ -4767,6 +4772,23 @@
         "resolvedValue": {
           "description": "Always present. Structured value for the parameter extracted from user utterance.",
           "type": "any"
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowCxV3WebhookRequestSentimentAnalysisResult": {
+      "description": "Represents the result of sentiment analysis.",
+      "id": "GoogleCloudDialogflowCxV3WebhookRequestSentimentAnalysisResult",
+      "properties": {
+        "magnitude": {
+          "description": "A non-negative number in the [0, +inf) range, which represents the absolute magnitude of sentiment, regardless of score (positive or negative).",
+          "format": "float",
+          "type": "number"
+        },
+        "score": {
+          "description": "Sentiment score between -1.0 (negative sentiment) and 1.0 (positive sentiment).",
+          "format": "float",
+          "type": "number"
         }
       },
       "type": "object"
@@ -4843,7 +4865,7 @@
           "type": "string"
         },
         "defaultLanguageCode": {
-          "description": "Immutable. The default language of the agent as a language tag. See [Language Support](https://cloud.google.com/dialogflow/docs/reference/language) for a list of the currently supported language codes. This field cannot be set by the Agents.UpdateAgent method.",
+          "description": "Immutable. The default language of the agent as a language tag. See [Language Support](https://cloud.google.com/dialogflow/cx/docs/reference/language) for a list of the currently supported language codes. This field cannot be set by the Agents.UpdateAgent method.",
           "type": "string"
         },
         "description": {
@@ -4864,6 +4886,10 @@
         },
         "name": {
           "description": "The unique identifier of the agent. Required for the Agents.UpdateAgent method. Agents.CreateAgent populates the name automatically. Format: `projects//locations//agents/`.",
+          "type": "string"
+        },
+        "securitySettings": {
+          "description": "Name of the SecuritySettings reference for the agent. Format: `projects//locations//securitySettings/`.",
           "type": "string"
         },
         "speechToTextSettings": {
@@ -4987,9 +5013,13 @@
           "$ref": "GoogleCloudDialogflowCxV3beta1IntentCoverage",
           "description": "Intent coverage."
         },
+        "routeGroupCoverage": {
+          "$ref": "GoogleCloudDialogflowCxV3beta1TransitionRouteGroupCoverage",
+          "description": "Transition route group coverage."
+        },
         "transitionCoverage": {
           "$ref": "GoogleCloudDialogflowCxV3beta1TransitionCoverage",
-          "description": "Transition coverage."
+          "description": "Transition (excluding transition route groups) coverage."
         }
       },
       "type": "object"
@@ -5038,7 +5068,7 @@
       "properties": {
         "currentPage": {
           "$ref": "GoogleCloudDialogflowCxV3beta1Page",
-          "description": "The Page on which the utterance was spoken. Only some fields such as name and displayname will be set."
+          "description": "The Page on which the utterance was spoken. Only name and displayName will be set."
         },
         "diagnosticInfo": {
           "additionalProperties": {
@@ -5077,7 +5107,7 @@
         },
         "triggeredIntent": {
           "$ref": "GoogleCloudDialogflowCxV3beta1Intent",
-          "description": "The Intent that triggered the response. Only some fields such as name and displayname will be set."
+          "description": "The Intent that triggered the response. Only name and displayName will be set."
         }
       },
       "type": "object"
@@ -5230,12 +5260,16 @@
         "name": {
           "description": "The unique identifier of the entity type. Required for EntityTypes.UpdateEntityType. Format: `projects//locations//agents//entityTypes/`.",
           "type": "string"
+        },
+        "redact": {
+          "description": "Indicates whether parameters of the entity type should be redacted in log. If redaction is enabled, page parameters and intent parameters referring to the entity type will be replaced by parameter name during logging.",
+          "type": "boolean"
         }
       },
       "type": "object"
     },
     "GoogleCloudDialogflowCxV3beta1EntityTypeEntity": {
-      "description": "An **entity entry** for an associated entity type. Next Id = 8",
+      "description": "An **entity entry** for an associated entity type.",
       "id": "GoogleCloudDialogflowCxV3beta1EntityTypeEntity",
       "properties": {
         "synonyms": {
@@ -5346,7 +5380,7 @@
       "type": "object"
     },
     "GoogleCloudDialogflowCxV3beta1Experiment": {
-      "description": "Represents an experiment in an environment. Next ID: 13",
+      "description": "Represents an experiment in an environment.",
       "id": "GoogleCloudDialogflowCxV3beta1Experiment",
       "properties": {
         "createTime": {
@@ -5372,7 +5406,7 @@
           "type": "string"
         },
         "experimentLength": {
-          "description": "Maximum number of days to run the experiment.",
+          "description": "Maximum number of days to run the experiment. If auto-rollout is not enabled, default value and maximum will be 30 days. If auto-rollout is enabled, default value and maximum will be 6 days.",
           "format": "google-duration",
           "type": "string"
         },
@@ -5421,7 +5455,7 @@
       "type": "object"
     },
     "GoogleCloudDialogflowCxV3beta1ExperimentDefinition": {
-      "description": "Definition of the experiment. Next ID: 3",
+      "description": "Definition of the experiment.",
       "id": "GoogleCloudDialogflowCxV3beta1ExperimentDefinition",
       "properties": {
         "condition": {
@@ -5489,13 +5523,34 @@
           "$ref": "GoogleCloudDialogflowCxV3beta1ExperimentResultConfidenceInterval",
           "description": "The probability that the treatment is better than all other treatments in the experiment"
         },
+        "count": {
+          "description": "Count value of a metric.",
+          "format": "double",
+          "type": "number"
+        },
+        "countType": {
+          "description": "Count-based metric type. Only one of type or count_type is specified in each Metric.",
+          "enum": [
+            "COUNT_TYPE_UNSPECIFIED",
+            "TOTAL_NO_MATCH_COUNT",
+            "TOTAL_TURN_COUNT",
+            "AVERAGE_TURN_COUNT"
+          ],
+          "enumDescriptions": [
+            "Count type unspecified.",
+            "Total number of occurrences of a 'NO_MATCH'.",
+            "Total number of turn counts.",
+            "Average turn count in a session."
+          ],
+          "type": "string"
+        },
         "ratio": {
           "description": "Ratio value of a metric.",
           "format": "double",
           "type": "number"
         },
         "type": {
-          "description": "The type of the metric.",
+          "description": "Ratio-based metric type. Only one of type or count_type is specified in each Metric.",
           "enum": [
             "METRIC_UNSPECIFIED",
             "CONTAINED_SESSION_NO_CALLBACK_RATE",
@@ -5717,7 +5772,7 @@
           "type": "boolean"
         },
         "redact": {
-          "description": "Indicates whether the parameter content is logged in text and audio. If it is set to true, the parameter content will be replaced to parameter name in both request and response. The default value is false.",
+          "description": "Indicates whether the parameter content should be redacted in log. If redaction is enabled, the parameter content will be replaced by parameter name during logging. Note: the parameter content is subject to redaction if either parameter level redaction or entity type level redaction is enabled.",
           "type": "boolean"
         },
         "required": {
@@ -6161,7 +6216,7 @@
           "type": "boolean"
         },
         "redact": {
-          "description": "Indicates whether the parameter content is logged in text and audio. If it is set to true, the parameter content will be replaced to parameter id in both request and response. The default value is false.",
+          "description": "Indicates whether the parameter content should be redacted in log. If redaction is enabled, the parameter content will be replaced by parameter name during logging. Note: the parameter content is subject to redaction if either parameter level redaction or entity type level redaction is enabled.",
           "type": "boolean"
         }
       },
@@ -6700,7 +6755,7 @@
           "type": "array"
         },
         "transitionRoutes": {
-          "description": "A list of transitions for the transition rules of this page. They route the conversation to another page in the same flow, or another flow. When we are in a certain page, the TransitionRoutes are evalauted in the following order: * TransitionRoutes defined in the page with intent specified. * TransitionRoutes defined in the transition route groups with intent specified. * TransitionRoutes defined in flow with intent specified. * TransitionRoutes defined in the page with only condition specified. * TransitionRoutes defined in the transition route groups with only condition specified.",
+          "description": "A list of transitions for the transition rules of this page. They route the conversation to another page in the same flow, or another flow. When we are in a certain page, the TransitionRoutes are evalauted in the following order: * TransitionRoutes defined in the page with intent specified. * TransitionRoutes defined in the transition route groups with intent specified. * TransitionRoutes defined in flow with intent specified. * TransitionRoutes defined in the transition route groups with intent specified. * TransitionRoutes defined in the page with only condition specified. * TransitionRoutes defined in the transition route groups with only condition specified.",
           "items": {
             "$ref": "GoogleCloudDialogflowCxV3beta1TransitionRoute"
           },
@@ -6798,7 +6853,7 @@
           "description": "The intent to be triggered."
         },
         "languageCode": {
-          "description": "Required. The language of the input. See [Language Support](https://cloud.google.com/dialogflow/docs/reference/language) for a list of the currently supported language codes. Note that queries in the same session do not necessarily need to specify the same language.",
+          "description": "Required. The language of the input. See [Language Support](https://cloud.google.com/dialogflow/cx/docs/reference/language) for a list of the currently supported language codes. Note that queries in the same session do not necessarily need to specify the same language.",
           "type": "string"
         },
         "text": {
@@ -6814,6 +6869,10 @@
       "properties": {
         "analyzeQueryTextSentiment": {
           "description": "Configures whether sentiment analysis should be performed. If not provided, sentiment analysis is not performed.",
+          "type": "boolean"
+        },
+        "disableWebhook": {
+          "description": "Whether to disable webhook calls for this request.",
           "type": "boolean"
         },
         "geoLocation": {
@@ -6883,7 +6942,7 @@
           "type": "number"
         },
         "languageCode": {
-          "description": "The language that was triggered during intent detection. See [Language Support](https://cloud.google.com/dialogflow/docs/reference/language) for a list of the currently supported language codes.",
+          "description": "The language that was triggered during intent detection. See [Language Support](https://cloud.google.com/dialogflow/cx/docs/reference/language) for a list of the currently supported language codes.",
           "type": "string"
         },
         "match": {
@@ -6982,7 +7041,7 @@
         },
         "endInteraction": {
           "$ref": "GoogleCloudDialogflowCxV3beta1ResponseMessageEndInteraction",
-          "description": "Output only. A signal that indicates the interaction with the Dialogflow agent has ended. This message is generated by Dialogflow only when the conversation reaches `END_SESSION` or `END_PAGE` page. It is not supposed to be defined by the user. It's guaranteed that there is at most one such message in each response.",
+          "description": "Output only. A signal that indicates the interaction with the Dialogflow agent has ended. This message is generated by Dialogflow only when the conversation reaches `END_SESSION` page. It is not supposed to be defined by the user. It's guaranteed that there is at most one such message in each response.",
           "readOnly": true
         },
         "liveAgentHandoff": {
@@ -7155,6 +7214,20 @@
         "agentUri": {
           "description": "The [Google Cloud Storage](https://cloud.google.com/storage/docs/) URI to restore agent from. The format of this URI must be `gs:///`.",
           "type": "string"
+        },
+        "restoreOption": {
+          "description": "Agent restore mode. If not specified, `KEEP` is assumed.",
+          "enum": [
+            "RESTORE_OPTION_UNSPECIFIED",
+            "KEEP",
+            "FALLBACK"
+          ],
+          "enumDescriptions": [
+            "Unspecified. Treated as KEEP.",
+            "Always respect the settings from the exported agent file. It may cause a restoration failure if some settings (e.g. model type) are not supported in the target agent.",
+            "Fallback to default settings if some settings are not supported in the target agent."
+          ],
+          "type": "string"
         }
       },
       "type": "object"
@@ -7171,10 +7244,6 @@
       "properties": {
         "environment": {
           "description": "Optional. Environment name. If not set, draft environment is assumed. Format: `projects//locations//agents//environments/`.",
-          "type": "string"
-        },
-        "name": {
-          "description": "Required. Format of test case name to run: `projects//locations/ /agents//testCases/`.",
           "type": "string"
         }
       },
@@ -7451,7 +7520,7 @@
           "type": "array"
         },
         "environment": {
-          "description": "Optional. Environment where the test was run. If not set, it indicates the draft environment.",
+          "description": "Environment where the test was run. If not set, it indicates the draft environment.",
           "type": "string"
         },
         "name": {
@@ -7565,7 +7634,7 @@
       "type": "object"
     },
     "GoogleCloudDialogflowCxV3beta1TransitionCoverage": {
-      "description": "Transition coverage represents the percentage of all possible transitions present within any of a parent's test cases.",
+      "description": "Transition coverage represents the percentage of all possible page transitions (page-level transition routes and event handlers, excluding transition route groups) present within any of a parent's test cases.",
       "id": "GoogleCloudDialogflowCxV3beta1TransitionCoverage",
       "properties": {
         "coverageScore": {
@@ -7584,7 +7653,7 @@
       "type": "object"
     },
     "GoogleCloudDialogflowCxV3beta1TransitionCoverageTransition": {
-      "description": "A transition in the agent's graph.",
+      "description": "A transition in a page.",
       "id": "GoogleCloudDialogflowCxV3beta1TransitionCoverageTransition",
       "properties": {
         "covered": {
@@ -7680,6 +7749,63 @@
             "$ref": "GoogleCloudDialogflowCxV3beta1TransitionRoute"
           },
           "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowCxV3beta1TransitionRouteGroupCoverage": {
+      "description": "Transition route group coverage represents the percentage of all possible transition routes present within any of a parent's test cases. The results are grouped by the transition route group.",
+      "id": "GoogleCloudDialogflowCxV3beta1TransitionRouteGroupCoverage",
+      "properties": {
+        "coverageScore": {
+          "description": "The percent of transition routes in all the transition route groups that are covered.",
+          "format": "float",
+          "type": "number"
+        },
+        "coverages": {
+          "description": "Transition route group coverages.",
+          "items": {
+            "$ref": "GoogleCloudDialogflowCxV3beta1TransitionRouteGroupCoverageCoverage"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowCxV3beta1TransitionRouteGroupCoverageCoverage": {
+      "description": "Coverage result message for one transition route group.",
+      "id": "GoogleCloudDialogflowCxV3beta1TransitionRouteGroupCoverageCoverage",
+      "properties": {
+        "coverageScore": {
+          "description": "The percent of transition routes in the transition route group that are covered.",
+          "format": "float",
+          "type": "number"
+        },
+        "routeGroup": {
+          "$ref": "GoogleCloudDialogflowCxV3beta1TransitionRouteGroup",
+          "description": "Transition route group metadata. Only name and displayName will be set."
+        },
+        "transitions": {
+          "description": "The list of transition routes and coverage in the transition route group.",
+          "items": {
+            "$ref": "GoogleCloudDialogflowCxV3beta1TransitionRouteGroupCoverageCoverageTransition"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowCxV3beta1TransitionRouteGroupCoverageCoverageTransition": {
+      "description": "A transition coverage in a transition route group.",
+      "id": "GoogleCloudDialogflowCxV3beta1TransitionRouteGroupCoverageCoverageTransition",
+      "properties": {
+        "covered": {
+          "description": "Whether or not the transition route is covered by at least one of the agent's test cases.",
+          "type": "boolean"
+        },
+        "transitionRoute": {
+          "$ref": "GoogleCloudDialogflowCxV3beta1TransitionRoute",
+          "description": "Intent route or condition route."
         }
       },
       "type": "object"
@@ -8007,6 +8133,10 @@
           "description": "Custom data set in QueryParameters.payload.",
           "type": "object"
         },
+        "sentimentAnalysisResult": {
+          "$ref": "GoogleCloudDialogflowCxV3beta1WebhookRequestSentimentAnalysisResult",
+          "description": "The sentiment analysis result of the current user request. The field is filled when sentiment analysis is configured to be enabled for the request."
+        },
         "sessionInfo": {
           "$ref": "GoogleCloudDialogflowCxV3beta1SessionInfo",
           "description": "Information about session status."
@@ -8029,6 +8159,15 @@
       "description": "Represents intent information communicated to the webhook.",
       "id": "GoogleCloudDialogflowCxV3beta1WebhookRequestIntentInfo",
       "properties": {
+        "confidence": {
+          "description": "The confidence of the matched intent. Values range from 0.0 (completely uncertain) to 1.0 (completely certain).",
+          "format": "float",
+          "type": "number"
+        },
+        "displayName": {
+          "description": "Always present. The display name of the last matched intent.",
+          "type": "string"
+        },
         "lastMatchedIntent": {
           "description": "Always present. The unique identifier of the last matched intent. Format: `projects//locations//agents//intents/`.",
           "type": "string"
@@ -8054,6 +8193,23 @@
         "resolvedValue": {
           "description": "Always present. Structured value for the parameter extracted from user utterance.",
           "type": "any"
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowCxV3beta1WebhookRequestSentimentAnalysisResult": {
+      "description": "Represents the result of sentiment analysis.",
+      "id": "GoogleCloudDialogflowCxV3beta1WebhookRequestSentimentAnalysisResult",
+      "properties": {
+        "magnitude": {
+          "description": "A non-negative number in the [0, +inf) range, which represents the absolute magnitude of sentiment, regardless of score (positive or negative).",
+          "format": "float",
+          "type": "number"
+        },
+        "score": {
+          "description": "Sentiment score between -1.0 (negative sentiment) and 1.0 (positive sentiment).",
+          "format": "float",
+          "type": "number"
         }
       },
       "type": "object"
@@ -8135,6 +8291,44 @@
         },
         "text": {
           "description": "A part of a message possibly annotated with an entity.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowV2ArticleAnswer": {
+      "description": "Represents article answer.",
+      "id": "GoogleCloudDialogflowV2ArticleAnswer",
+      "properties": {
+        "answerRecord": {
+          "description": "The name of answer record, in the format of \"projects//locations//answerRecords/\"",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "Article match confidence. The system's confidence score that this article is a good match for this conversation, as a value from 0.0 (completely uncertain) to 1.0 (completely certain).",
+          "format": "float",
+          "type": "number"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "A map that contains metadata about the answer and the document from which it originates.",
+          "type": "object"
+        },
+        "snippets": {
+          "description": "Article snippets.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "title": {
+          "description": "The article title.",
+          "type": "string"
+        },
+        "uri": {
+          "description": "The article URI.",
           "type": "string"
         }
       },
@@ -8342,6 +8536,63 @@
       },
       "type": "object"
     },
+    "GoogleCloudDialogflowV2FaqAnswer": {
+      "description": "Represents answer from \"frequently asked questions\".",
+      "id": "GoogleCloudDialogflowV2FaqAnswer",
+      "properties": {
+        "answer": {
+          "description": "The piece of text from the `source` knowledge base document.",
+          "type": "string"
+        },
+        "answerRecord": {
+          "description": "The name of answer record, in the format of \"projects//locations//answerRecords/\"",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "The system's confidence score that this Knowledge answer is a good match for this conversational query, range from 0.0 (completely uncertain) to 1.0 (completely certain).",
+          "format": "float",
+          "type": "number"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "A map that contains metadata about the answer and the document from which it originates.",
+          "type": "object"
+        },
+        "question": {
+          "description": "The corresponding FAQ question.",
+          "type": "string"
+        },
+        "source": {
+          "description": "Indicates which Knowledge Document this answer was extracted from. Format: `projects//locations//agent/knowledgeBases//documents/`.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowV2HumanAgentAssistantEvent": {
+      "description": "Represents a notification sent to Cloud Pub/Sub subscribers for human agent assistant events in a specific conversation.",
+      "id": "GoogleCloudDialogflowV2HumanAgentAssistantEvent",
+      "properties": {
+        "conversation": {
+          "description": "The conversation this notification refers to. Format: `projects//conversations/`.",
+          "type": "string"
+        },
+        "participant": {
+          "description": "The participant that the suggestion is compiled for. Format: `projects//conversations//participants/`. It will not be set in legacy workflow.",
+          "type": "string"
+        },
+        "suggestionResults": {
+          "description": "The suggestion results payload that this notification refers to.",
+          "items": {
+            "$ref": "GoogleCloudDialogflowV2SuggestionResult"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
     "GoogleCloudDialogflowV2Intent": {
       "description": "An intent categorizes an end-user's intention for one conversation turn. For each agent, you define many intents, where your combined intents can handle a complete conversation. When an end-user writes or says something, referred to as an end-user expression or end-user input, Dialogflow matches the end-user input to the best intent in your agent. Matching an intent is also known as intent classification. For more information, see the [intent guide](https://cloud.google.com/dialogflow/docs/intents-overview).",
       "id": "GoogleCloudDialogflowV2Intent",
@@ -8385,6 +8636,10 @@
           "description": "Required. The name of this intent.",
           "type": "string"
         },
+        "endInteraction": {
+          "description": "Optional. Indicates that this intent ends an interaction. Some integrations (e.g., Actions on Google or Dialogflow phone gateway) use this information to close interaction with an end user. Default is false.",
+          "type": "boolean"
+        },
         "events": {
           "description": "Optional. The collection of event names that trigger the intent. If the collection of input contexts is not empty, all of the contexts must be present in the active user session for an event to trigger this intent. Event names are limited to 150 characters.",
           "items": {
@@ -8408,6 +8663,10 @@
         },
         "isFallback": {
           "description": "Optional. Indicates whether this is a fallback intent.",
+          "type": "boolean"
+        },
+        "liveAgentHandoff": {
+          "description": "Optional. Indicates that a live agent should be brought in to handle the interaction with the user. In most cases, when you set this flag to true, you would also want to set end_interaction to true as well. Default is false.",
           "type": "boolean"
         },
         "messages": {
@@ -9242,6 +9501,30 @@
       },
       "type": "object"
     },
+    "GoogleCloudDialogflowV2KnowledgeOperationMetadata": {
+      "description": "Metadata in google::longrunning::Operation for Knowledge operations.",
+      "id": "GoogleCloudDialogflowV2KnowledgeOperationMetadata",
+      "properties": {
+        "state": {
+          "description": "Output only. The current state of this operation.",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PENDING",
+            "RUNNING",
+            "DONE"
+          ],
+          "enumDescriptions": [
+            "State unspecified.",
+            "The operation has been created.",
+            "The operation is currently running.",
+            "The operation is done, either cancelled or completed."
+          ],
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "GoogleCloudDialogflowV2Message": {
       "description": "Represents a message posted into a conversation.",
       "id": "GoogleCloudDialogflowV2Message",
@@ -9482,6 +9765,71 @@
       },
       "type": "object"
     },
+    "GoogleCloudDialogflowV2SuggestArticlesResponse": {
+      "description": "The response message for Participants.SuggestArticles.",
+      "id": "GoogleCloudDialogflowV2SuggestArticlesResponse",
+      "properties": {
+        "articleAnswers": {
+          "description": "Articles ordered by score in descending order.",
+          "items": {
+            "$ref": "GoogleCloudDialogflowV2ArticleAnswer"
+          },
+          "type": "array"
+        },
+        "contextSize": {
+          "description": "Number of messages prior to and including latest_message to compile the suggestion. It may be smaller than the SuggestArticlesRequest.context_size field in the request if there aren't that many messages in the conversation.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "latestMessage": {
+          "description": "The name of the latest conversation message used to compile suggestion for. Format: `projects//locations//conversations//messages/`.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowV2SuggestFaqAnswersResponse": {
+      "description": "The request message for Participants.SuggestFaqAnswers.",
+      "id": "GoogleCloudDialogflowV2SuggestFaqAnswersResponse",
+      "properties": {
+        "contextSize": {
+          "description": "Number of messages prior to and including latest_message to compile the suggestion. It may be smaller than the SuggestFaqAnswersRequest.context_size field in the request if there aren't that many messages in the conversation.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "faqAnswers": {
+          "description": "Answers extracted from FAQ documents.",
+          "items": {
+            "$ref": "GoogleCloudDialogflowV2FaqAnswer"
+          },
+          "type": "array"
+        },
+        "latestMessage": {
+          "description": "The name of the latest conversation message used to compile suggestion for. Format: `projects//locations//conversations//messages/`.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowV2SuggestionResult": {
+      "description": "One response of different type of suggestion response which is used in the response of Participants.AnalyzeContent and Participants.AnalyzeContent, as well as HumanAgentAssistantEvent.",
+      "id": "GoogleCloudDialogflowV2SuggestionResult",
+      "properties": {
+        "error": {
+          "$ref": "GoogleRpcStatus",
+          "description": "Error status if the request failed."
+        },
+        "suggestArticlesResponse": {
+          "$ref": "GoogleCloudDialogflowV2SuggestArticlesResponse",
+          "description": "SuggestArticlesResponse if request is for ARTICLE_SUGGESTION."
+        },
+        "suggestFaqAnswersResponse": {
+          "$ref": "GoogleCloudDialogflowV2SuggestFaqAnswersResponse",
+          "description": "SuggestFaqAnswersResponse if request is for FAQ_ANSWER."
+        }
+      },
+      "type": "object"
+    },
     "GoogleCloudDialogflowV2WebhookRequest": {
       "description": "The request message for a webhook call.",
       "id": "GoogleCloudDialogflowV2WebhookRequest",
@@ -9553,6 +9901,58 @@
       },
       "type": "object"
     },
+    "GoogleCloudDialogflowV2beta1AnnotatedMessagePart": {
+      "description": "Represents a part of a message possibly annotated with an entity. The part can be an entity or purely a part of the message between two entities or message start/end.",
+      "id": "GoogleCloudDialogflowV2beta1AnnotatedMessagePart",
+      "properties": {
+        "entityType": {
+          "description": "Optional. The [Dialogflow system entity type](https://cloud.google.com/dialogflow/docs/reference/system-entities) of this message part. If this is empty, Dialogflow could not annotate the phrase part with a system entity.",
+          "type": "string"
+        },
+        "formattedValue": {
+          "description": "Optional. The [Dialogflow system entity formatted value ](https://cloud.google.com/dialogflow/docs/reference/system-entities) of this message part. For example for a system entity of type `@sys.unit-currency`, this may contain: { \"amount\": 5, \"currency\": \"USD\" } ",
+          "type": "any"
+        },
+        "text": {
+          "description": "Required. A part of a message possibly annotated with an entity.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowV2beta1ArticleAnswer": {
+      "description": "Represents article answer.",
+      "id": "GoogleCloudDialogflowV2beta1ArticleAnswer",
+      "properties": {
+        "answerRecord": {
+          "description": "The name of answer record, in the format of \"projects//locations//answerRecords/\"",
+          "type": "string"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "A map that contains metadata about the answer and the document from which it originates.",
+          "type": "object"
+        },
+        "snippets": {
+          "description": "Output only. Article snippets.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "title": {
+          "description": "The article title.",
+          "type": "string"
+        },
+        "uri": {
+          "description": "The article URI.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "GoogleCloudDialogflowV2beta1BatchUpdateEntityTypesResponse": {
       "description": "The response message for EntityTypes.BatchUpdateEntityTypes.",
       "id": "GoogleCloudDialogflowV2beta1BatchUpdateEntityTypesResponse",
@@ -9601,6 +10001,43 @@
           },
           "description": "Optional. The collection of parameters associated with this context. Depending on your protocol or client library language, this is a map, associative array, symbol table, dictionary, or JSON object composed of a collection of (MapKey, MapValue) pairs: - MapKey type: string - MapKey value: parameter name - MapValue type: - If parameter's entity type is a composite entity: map - Else: depending on parameter value type, could be one of string, number, boolean, null, list or map - MapValue value: - If parameter's entity type is a composite entity: map from composite entity property names to property values - Else: parameter value",
           "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowV2beta1ConversationEvent": {
+      "description": "Represents a notification sent to Pub/Sub subscribers for conversation lifecycle events.",
+      "id": "GoogleCloudDialogflowV2beta1ConversationEvent",
+      "properties": {
+        "conversation": {
+          "description": "Required. The unique identifier of the conversation this notification refers to. Format: `projects//conversations/`.",
+          "type": "string"
+        },
+        "errorStatus": {
+          "$ref": "GoogleRpcStatus",
+          "description": "Optional. More detailed information about an error. Only set for type UNRECOVERABLE_ERROR_IN_PHONE_CALL."
+        },
+        "newMessagePayload": {
+          "$ref": "GoogleCloudDialogflowV2beta1Message",
+          "description": "Payload of NEW_MESSAGE event."
+        },
+        "type": {
+          "description": "Required. The type of the event that this notification refers to.",
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "CONVERSATION_STARTED",
+            "CONVERSATION_FINISHED",
+            "NEW_MESSAGE",
+            "UNRECOVERABLE_ERROR"
+          ],
+          "enumDescriptions": [
+            "Type not set.",
+            "A new conversation has been opened. This is fired when a telephone call is answered, or a conversation is created via the API.",
+            "An existing conversation has closed. This is fired when a telephone call is terminated, or a conversation is closed via the API.",
+            "An existing conversation has received a new message, either from API or telephony. It is configured in ConversationProfile.new_message_event_notification_config",
+            "Unrecoverable error during a telephone call. In general non-recoverable errors only occur if something was misconfigured in the ConversationProfile corresponding to the call. After a non-recoverable error, Dialogflow may stop responding. We don't fire this event: * in an API call because we can directly return the error, or, * when we can recover from an error."
+          ],
+          "type": "string"
         }
       },
       "type": "object"
@@ -9716,6 +10153,77 @@
       },
       "type": "object"
     },
+    "GoogleCloudDialogflowV2beta1FaqAnswer": {
+      "description": "Represents answer from \"frequently asked questions\".",
+      "id": "GoogleCloudDialogflowV2beta1FaqAnswer",
+      "properties": {
+        "answer": {
+          "description": "The piece of text from the `source` knowledge base document.",
+          "type": "string"
+        },
+        "answerRecord": {
+          "description": "The name of answer record, in the format of \"projects//locations//answerRecords/\"",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "The system's confidence score that this Knowledge answer is a good match for this conversational query, range from 0.0 (completely uncertain) to 1.0 (completely certain).",
+          "format": "float",
+          "type": "number"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "A map that contains metadata about the answer and the document from which it originates.",
+          "type": "object"
+        },
+        "question": {
+          "description": "The corresponding FAQ question.",
+          "type": "string"
+        },
+        "source": {
+          "description": "Indicates which Knowledge Document this answer was extracted from. Format: `projects//locations//agent/knowledgeBases//documents/`.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowV2beta1HumanAgentAssistantEvent": {
+      "description": "Output only. Represents a notification sent to Pub/Sub subscribers for agent assistant events in a specific conversation.",
+      "id": "GoogleCloudDialogflowV2beta1HumanAgentAssistantEvent",
+      "properties": {
+        "conversation": {
+          "description": "The conversation this notification refers to. Format: `projects//conversations/`.",
+          "type": "string"
+        },
+        "participant": {
+          "description": "The participant that the suggestion is compiled for. And This field is used to call Participants.ListSuggestions API. Format: `projects//conversations//participants/`. It will not be set in legacy workflow. HumanAgentAssistantConfig.name for more information.",
+          "type": "string"
+        },
+        "suggestionResults": {
+          "description": "The suggestion results payload that this notification refers to. It will only be set when HumanAgentAssistantConfig.SuggestionConfig.group_suggestion_responses sets to true.",
+          "items": {
+            "$ref": "GoogleCloudDialogflowV2beta1SuggestionResult"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowV2beta1ImportDocumentsResponse": {
+      "description": "Response message for Documents.ImportDocuments.",
+      "id": "GoogleCloudDialogflowV2beta1ImportDocumentsResponse",
+      "properties": {
+        "warnings": {
+          "description": "Includes details about skipped documents or any other warnings.",
+          "items": {
+            "$ref": "GoogleRpcStatus"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
     "GoogleCloudDialogflowV2beta1Intent": {
       "description": "An intent categorizes an end-user's intention for one conversation turn. For each agent, you define many intents, where your combined intents can handle a complete conversation. When an end-user writes or says something, referred to as an end-user expression or end-user input, Dialogflow matches the end-user input to the best intent in your agent. Matching an intent is also known as intent classification. For more information, see the [intent guide](https://cloud.google.com/dialogflow/docs/intents-overview).",
       "id": "GoogleCloudDialogflowV2beta1Intent",
@@ -9789,6 +10297,10 @@
         },
         "isFallback": {
           "description": "Optional. Indicates whether this is a fallback intent.",
+          "type": "boolean"
+        },
+        "liveAgentHandoff": {
+          "description": "Optional. Indicates that a live agent should be brought in to handle the interaction with the user. In most cases, when you set this flag to true, you would also want to set end_interaction to true as well. Default is false.",
           "type": "boolean"
         },
         "messages": {
@@ -10996,6 +11508,86 @@
       },
       "type": "object"
     },
+    "GoogleCloudDialogflowV2beta1Message": {
+      "description": "Represents a message posted into a conversation.",
+      "id": "GoogleCloudDialogflowV2beta1Message",
+      "properties": {
+        "content": {
+          "description": "Required. The message content.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the message was created in Contact Center AI.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        },
+        "languageCode": {
+          "description": "Optional. The message language. This should be a [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag. Example: \"en-US\".",
+          "type": "string"
+        },
+        "messageAnnotation": {
+          "$ref": "GoogleCloudDialogflowV2beta1MessageAnnotation",
+          "description": "Output only. The annotation for the message.",
+          "readOnly": true
+        },
+        "name": {
+          "description": "Optional. The unique identifier of the message. Format: `projects//locations//conversations//messages/`.",
+          "type": "string"
+        },
+        "participant": {
+          "description": "Output only. The participant that sends this message.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "participantRole": {
+          "description": "Output only. The role of the participant.",
+          "enum": [
+            "ROLE_UNSPECIFIED",
+            "HUMAN_AGENT",
+            "AUTOMATED_AGENT",
+            "END_USER"
+          ],
+          "enumDescriptions": [
+            "Participant role not set.",
+            "Participant is a human agent.",
+            "Participant is an automated agent, such as a Dialogflow agent.",
+            "Participant is an end user that has called or chatted with Dialogflow services."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "sendTime": {
+          "description": "Optional. The time when the message was sent.",
+          "format": "google-datetime",
+          "type": "string"
+        },
+        "sentimentAnalysis": {
+          "$ref": "GoogleCloudDialogflowV2beta1SentimentAnalysisResult",
+          "description": "Output only. The sentiment analysis result for the message.",
+          "readOnly": true
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowV2beta1MessageAnnotation": {
+      "description": "Represents the result of annotation for the message.",
+      "id": "GoogleCloudDialogflowV2beta1MessageAnnotation",
+      "properties": {
+        "containEntities": {
+          "description": "Required. Indicates whether the text message contains entities.",
+          "type": "boolean"
+        },
+        "parts": {
+          "description": "Optional. The collection of annotated message parts ordered by their position in the message. You can recover the annotated message by concatenating [AnnotatedMessagePart.text].",
+          "items": {
+            "$ref": "GoogleCloudDialogflowV2beta1AnnotatedMessagePart"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
     "GoogleCloudDialogflowV2beta1OriginalDetectIntentRequest": {
       "description": "Represents the contents of the original request that was passed to the `[Streaming]DetectIntent` call.",
       "id": "GoogleCloudDialogflowV2beta1OriginalDetectIntentRequest",
@@ -11170,6 +11762,118 @@
       },
       "type": "object"
     },
+    "GoogleCloudDialogflowV2beta1SmartReplyAnswer": {
+      "description": "Represents a smart reply answer.",
+      "id": "GoogleCloudDialogflowV2beta1SmartReplyAnswer",
+      "properties": {
+        "answerRecord": {
+          "description": "The name of answer record, in the format of \"projects//locations//answerRecords/\"",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "Smart reply confidence. The system's confidence score that this reply is a good match for this conversation, as a value from 0.0 (completely uncertain) to 1.0 (completely certain).",
+          "format": "float",
+          "type": "number"
+        },
+        "reply": {
+          "description": "The content of the reply.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowV2beta1SuggestArticlesResponse": {
+      "description": "The response message for Participants.SuggestArticles.",
+      "id": "GoogleCloudDialogflowV2beta1SuggestArticlesResponse",
+      "properties": {
+        "articleAnswers": {
+          "description": "Output only. Articles ordered by score in descending order.",
+          "items": {
+            "$ref": "GoogleCloudDialogflowV2beta1ArticleAnswer"
+          },
+          "type": "array"
+        },
+        "contextSize": {
+          "description": "Number of messages prior to and including latest_message to compile the suggestion. It may be smaller than the SuggestArticlesResponse.context_size field in the request if there aren't that many messages in the conversation.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "latestMessage": {
+          "description": "The name of the latest conversation message used to compile suggestion for. Format: `projects//locations//conversations//messages/`.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowV2beta1SuggestFaqAnswersResponse": {
+      "description": "The request message for Participants.SuggestFaqAnswers.",
+      "id": "GoogleCloudDialogflowV2beta1SuggestFaqAnswersResponse",
+      "properties": {
+        "contextSize": {
+          "description": "Number of messages prior to and including latest_message to compile the suggestion. It may be smaller than the SuggestFaqAnswersRequest.context_size field in the request if there aren't that many messages in the conversation.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "faqAnswers": {
+          "description": "Output only. Answers extracted from FAQ documents.",
+          "items": {
+            "$ref": "GoogleCloudDialogflowV2beta1FaqAnswer"
+          },
+          "type": "array"
+        },
+        "latestMessage": {
+          "description": "The name of the latest conversation message used to compile suggestion for. Format: `projects//locations//conversations//messages/`.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowV2beta1SuggestSmartRepliesResponse": {
+      "description": "The response message for Participants.SuggestSmartReplies.",
+      "id": "GoogleCloudDialogflowV2beta1SuggestSmartRepliesResponse",
+      "properties": {
+        "contextSize": {
+          "description": "Number of messages prior to and including latest_message to compile the suggestion. It may be smaller than the SuggestSmartRepliesRequest.context_size field in the request if there aren't that many messages in the conversation.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "latestMessage": {
+          "description": "The name of the latest conversation message used to compile suggestion for. Format: `projects//locations//conversations//messages/`.",
+          "type": "string"
+        },
+        "smartReplyAnswers": {
+          "description": "Output only. Multiple reply options provided by smart reply service. The order is based on the rank of the model prediction. The maximum number of the returned replies is set in SmartReplyConfig.",
+          "items": {
+            "$ref": "GoogleCloudDialogflowV2beta1SmartReplyAnswer"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "GoogleCloudDialogflowV2beta1SuggestionResult": {
+      "description": "One response of different type of suggestion response which is used in the response of Participants.AnalyzeContent and Participants.AnalyzeContent, as well as HumanAgentAssistantEvent.",
+      "id": "GoogleCloudDialogflowV2beta1SuggestionResult",
+      "properties": {
+        "error": {
+          "$ref": "GoogleRpcStatus",
+          "description": "Error status if the request failed."
+        },
+        "suggestArticlesResponse": {
+          "$ref": "GoogleCloudDialogflowV2beta1SuggestArticlesResponse",
+          "description": "SuggestArticlesResponse if request is for ARTICLE_SUGGESTION."
+        },
+        "suggestFaqAnswersResponse": {
+          "$ref": "GoogleCloudDialogflowV2beta1SuggestFaqAnswersResponse",
+          "description": "SuggestFaqAnswersResponse if request is for FAQ_ANSWER."
+        },
+        "suggestSmartRepliesResponse": {
+          "$ref": "GoogleCloudDialogflowV2beta1SuggestSmartRepliesResponse",
+          "description": "SuggestSmartRepliesResponse if request is for SMART_REPLY."
+        }
+      },
+      "type": "object"
+    },
     "GoogleCloudDialogflowV2beta1WebhookRequest": {
       "description": "The request message for a webhook call.",
       "id": "GoogleCloudDialogflowV2beta1WebhookRequest",
@@ -11222,6 +11926,10 @@
         "fulfillmentText": {
           "description": "Optional. The text response message intended for the end-user. It is recommended to use `fulfillment_messages.text.text[0]` instead. When provided, Dialogflow uses this field to populate QueryResult.fulfillment_text sent to the integration or API caller.",
           "type": "string"
+        },
+        "liveAgentHandoff": {
+          "description": "Indicates that a live agent should be brought in to handle the interaction with the user. In most cases, when you set this flag to true, you would also want to set end_interaction to true as well. Default is false.",
+          "type": "boolean"
         },
         "outputContexts": {
           "description": "Optional. The collection of output contexts that will overwrite currently active contexts for the session and reset their lifespans. When provided, Dialogflow uses this field to populate QueryResult.output_contexts sent to the integration or API caller.",

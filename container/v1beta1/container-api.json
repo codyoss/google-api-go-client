@@ -2484,7 +2484,7 @@
       }
     }
   },
-  "revision": "20201221",
+  "revision": "20210224",
   "rootUrl": "https://container.googleapis.com/",
   "schemas": {
     "AcceleratorConfig": {
@@ -2576,6 +2576,17 @@
         "description": {
           "description": "[Output only] This field is set when upgrades are about to commence with the description of the upgrade.",
           "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Autopilot": {
+      "description": "Autopilot is the configuration for Autopilot settings on the cluster. It is the official product name of what is previously known as AutoGKE",
+      "id": "Autopilot",
+      "properties": {
+        "enabled": {
+          "description": "Enable Autopilot",
+          "type": "boolean"
         }
       },
       "type": "object"
@@ -2749,6 +2760,10 @@
         "authenticatorGroupsConfig": {
           "$ref": "AuthenticatorGroupsConfig",
           "description": "Configuration controlling RBAC group membership information."
+        },
+        "autopilot": {
+          "$ref": "Autopilot",
+          "description": "Autopilot configuration for the cluster. It has the same semantics as AutoGKE and overrides the setting in autogke."
         },
         "autoscaling": {
           "$ref": "ClusterAutoscaling",
@@ -3132,6 +3147,10 @@
         "desiredIntraNodeVisibilityConfig": {
           "$ref": "IntraNodeVisibilityConfig",
           "description": "The desired config of Intra-node visibility."
+        },
+        "desiredL4ilbSubsettingConfig": {
+          "$ref": "ILBSubsettingConfig",
+          "description": "The desired L4 Internal Load Balancer Subsetting configuration."
         },
         "desiredLocations": {
           "description": "The desired list of Google Compute Engine [zones](https://cloud.google.com/compute/docs/zones#available) in which the cluster's nodes should be located. This list must always include the cluster's primary zone. Warning: changing cluster locations will update the locations of all node pools and will result in nodes being added and/or removed.",
@@ -3533,6 +3552,17 @@
       "properties": {
         "disabled": {
           "description": "Whether the HTTP Load Balancing controller is enabled in the cluster. When enabled, it runs a small pod in the cluster that manages the load balancers.",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "ILBSubsettingConfig": {
+      "description": "ILBSubsettingConfig contains the desired config of L4 Internal LoadBalancer subsetting on this cluster.",
+      "id": "ILBSubsettingConfig",
+      "properties": {
+        "enabled": {
+          "description": "Enables l4 ILB subsetting for this cluster",
           "type": "boolean"
         }
       },
@@ -4000,6 +4030,10 @@
           "description": "Whether Intra-node visibility is enabled for this cluster. This makes same node pod to pod traffic visible for VPC network.",
           "type": "boolean"
         },
+        "enableL4ilbSubsetting": {
+          "description": "Whether L4ILB Subsetting is enabled for this cluster.",
+          "type": "boolean"
+        },
         "network": {
           "description": "Output only. The relative name of the Google Compute Engine network(https://cloud.google.com/compute/docs/networks-and-firewalls#networks) to which the cluster is connected. Example: projects/my-project/global/networks/my-network",
           "type": "string"
@@ -4057,6 +4091,20 @@
         "disabled": {
           "description": "Whether NetworkPolicy is enabled for this cluster.",
           "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "NetworkTags": {
+      "description": "Collection of Compute Engine network tags that can be applied to a node's underyling VM instance. (See `tags` field in [`NodeConfig`](/kubernetes-engine/docs/reference/rest/v1/NodeConfig)).",
+      "id": "NetworkTags",
+      "properties": {
+        "tags": {
+          "description": "List of network tags.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
         }
       },
       "type": "object"
@@ -4199,6 +4247,20 @@
       },
       "type": "object"
     },
+    "NodeLabels": {
+      "description": "Collection of node-level [Kubernetes labels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels).",
+      "id": "NodeLabels",
+      "properties": {
+        "labels": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Map of node label keys and node label values.",
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
     "NodeManagement": {
       "description": "NodeManagement defines the set of node management services turned on for the node pool.",
       "id": "NodeManagement",
@@ -4214,6 +4276,25 @@
         "upgradeOptions": {
           "$ref": "AutoUpgradeOptions",
           "description": "Specifies the Auto Upgrade knobs for the node pool."
+        }
+      },
+      "type": "object"
+    },
+    "NodeNetworkConfig": {
+      "description": "Parameters for node pool-level network config. Only applicable if `ip_allocation_policy.use_ip_aliases` is true.",
+      "id": "NodeNetworkConfig",
+      "properties": {
+        "createPodRange": {
+          "description": "Input only. [Input only] Whether to create a new range for pod IPs in this node pool. Defaults are provided for `pod_range` and `pod_ipv4_cidr_block` if they are not specified. If neither `create_pod_range` or `pod_range` are specified, the cluster-level default (`ip_allocation_policy.cluster_ipv4_cidr_block`) is used.",
+          "type": "boolean"
+        },
+        "podIpv4CidrBlock": {
+          "description": "The IP address range for pod IPs in this node pool. Only applicable if `create_pod_range` is true. Set to blank to have a range chosen with the default size. Set to /netmask (e.g. `/14`) to have a range chosen with a specific netmask. Set to a [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing) notation (e.g. `10.96.0.0/14`) to pick a specific range to use.",
+          "type": "string"
+        },
+        "podRange": {
+          "description": "The ID of the secondary range for pod IPs. If `create_pod_range` is true, this ID is used for the new range.",
+          "type": "string"
         }
       },
       "type": "object"
@@ -4267,6 +4348,10 @@
         "name": {
           "description": "The name of the node pool.",
           "type": "string"
+        },
+        "networkConfig": {
+          "$ref": "NodeNetworkConfig",
+          "description": "Networking configuration for this NodePool. If specified, it overrides the cluster-level defaults."
         },
         "podIpv4CidrSize": {
           "description": "[Output only] The pod CIDR block size per node in this node pool.",
@@ -4366,6 +4451,20 @@
         "value": {
           "description": "Value for taint.",
           "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "NodeTaints": {
+      "description": "Collection of Kubernetes [node taints](https://kubernetes.io/docs/concepts/configuration/taint-and-toleration).",
+      "id": "NodeTaints",
+      "properties": {
+        "taints": {
+          "description": "List of node taints.",
+          "items": {
+            "$ref": "NodeTaint"
+          },
+          "type": "array"
         }
       },
       "type": "object"
@@ -5491,6 +5590,10 @@
           "$ref": "NodeKubeletConfig",
           "description": "Node kubelet configs."
         },
+        "labels": {
+          "$ref": "NodeLabels",
+          "description": "The desired node labels to be applied to all nodes in the node pool. If this field is not present, the labels will not be changed. Otherwise, the existing node labels will be *replaced* with the provided labels."
+        },
         "linuxNodeConfig": {
           "$ref": "LinuxNodeConfig",
           "description": "Parameters that can be configured on Linux nodes."
@@ -5518,6 +5621,14 @@
           "description": "Required. Deprecated. The Google Developers Console [project ID or project number](https://support.google.com/cloud/answer/6158840). This field has been deprecated and replaced by the name field.",
           "type": "string"
         },
+        "tags": {
+          "$ref": "NetworkTags",
+          "description": "The desired network tags to be applied to all nodes in the node pool. If this field is not present, the tags will not be changed. Otherwise, the existing network tags will be *replaced* with the provided tags."
+        },
+        "taints": {
+          "$ref": "NodeTaints",
+          "description": "The desired node taints to be applied to all nodes in the node pool. If this field is not present, the taints will not be changed. Otherwise, the existing node taints will be *replaced* with the provided taints."
+        },
         "upgradeSettings": {
           "$ref": "UpgradeSettings",
           "description": "Upgrade settings control disruption and speed of the upgrade."
@@ -5528,6 +5639,39 @@
         },
         "zone": {
           "description": "Required. Deprecated. The name of the Google Compute Engine [zone](https://cloud.google.com/compute/docs/zones#available) in which the cluster resides. This field has been deprecated and replaced by the name field.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "UpgradeAvailableEvent": {
+      "description": "UpgradeAvailableEvent is a notification sent to customers when a new available version is released.",
+      "id": "UpgradeAvailableEvent",
+      "properties": {
+        "releaseChannel": {
+          "$ref": "ReleaseChannel",
+          "description": "The release channel of the version. If empty, it means a non-channel release."
+        },
+        "resource": {
+          "description": "Optional. Optional relative path to the resource. For example, the relative path of the node pool.",
+          "type": "string"
+        },
+        "resourceType": {
+          "description": "The resource type of the release version.",
+          "enum": [
+            "UPGRADE_RESOURCE_TYPE_UNSPECIFIED",
+            "MASTER",
+            "NODE_POOL"
+          ],
+          "enumDescriptions": [
+            "Default value. This shouldn't be used.",
+            "Master / control plane",
+            "Node pool"
+          ],
+          "type": "string"
+        },
+        "version": {
+          "description": "The release version available for upgrade.",
           "type": "string"
         }
       },

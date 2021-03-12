@@ -1723,7 +1723,7 @@
       }
     }
   },
-  "revision": "20201227",
+  "revision": "20210215",
   "rootUrl": "https://www.googleapis.com/",
   "schemas": {
     "Acl": {
@@ -2048,7 +2048,7 @@
           "type": "string"
         },
         "type": {
-          "description": "The type of delivery mechanism used for this channel.",
+          "description": "The type of delivery mechanism used for this channel. Valid values are \"web_hook\" (or \"webhook\"). Both values refer to a channel where Http requests are used to deliver messages.",
           "type": "string"
         }
       },
@@ -2376,6 +2376,11 @@
         },
         "etag": {
           "description": "ETag of the resource.",
+          "type": "string"
+        },
+        "eventType": {
+          "default": "default",
+          "description": "Specific type of the event. Read-only. Possible values are:  \n- \"default\" - A regular event or not further specified. \n- \"outOfOffice\" - An out-of-office event.",
           "type": "string"
         },
         "extendedProperties": {

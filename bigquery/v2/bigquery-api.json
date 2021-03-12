@@ -1670,7 +1670,7 @@
       }
     }
   },
-  "revision": "20210104",
+  "revision": "20210303",
   "rootUrl": "https://bigquery.googleapis.com/",
   "schemas": {
     "AggregateClassificationMetrics": {
@@ -1923,7 +1923,7 @@
           "type": "array"
         },
         "timeSeriesId": {
-          "description": "The id to indicate different time series.",
+          "description": "The time_series_id value for this time series. It will be one of the unique values from the time_series_id_column specified during ARIMA model training. Only present when time_series_id_column training option was used.",
           "type": "string"
         }
       },
@@ -2032,7 +2032,7 @@
           "type": "array"
         },
         "timeSeriesId": {
-          "description": "The id to indicate different time series.",
+          "description": "The time_series_id value for this time series. It will be one of the unique values from the time_series_id_column specified during ARIMA model training. Only present when time_series_id_column training option was used.",
           "type": "string"
         }
       },
@@ -2575,6 +2575,10 @@
           "description": "[Optional] An array of objects that define dataset access for one or more entities. You can set this property when inserting or updating a dataset in order to control who is allowed to access the data. If unspecified at dataset creation time, BigQuery adds default dataset access for the following entities: access.specialGroup: projectReaders; access.role: READER; access.specialGroup: projectWriters; access.role: WRITER; access.specialGroup: projectOwners; access.role: OWNER; access.userByEmail: [dataset creator email]; access.role: OWNER;",
           "items": {
             "properties": {
+              "dataset": {
+                "$ref": "DatasetAccessEntry",
+                "description": "[Pick one] A grant authorizing all resources of a particular type in a particular dataset access to this dataset. Only views are supported for now. The role field is not required when this field is set. If that dataset is deleted and re-created, its access needs to be granted again via an update operation."
+              },
               "domain": {
                 "description": "[Pick one] A domain to grant access to. Any users signed in with the domain specified will be granted the specified access. Example: \"example.com\". Maps to IAM policy member \"domain:DOMAIN\".",
                 "type": "string"
@@ -2682,6 +2686,28 @@
       },
       "type": "object"
     },
+    "DatasetAccessEntry": {
+      "id": "DatasetAccessEntry",
+      "properties": {
+        "dataset": {
+          "$ref": "DatasetReference",
+          "description": "[Required] The dataset this entry applies to."
+        },
+        "target_types": {
+          "items": {
+            "properties": {
+              "targetType": {
+                "description": "[Required] Which resources in the dataset this entry applies to. Currently, only views are supported, but additional target types may be added in the future. Possible values: VIEWS: This entry applies to all views in the dataset.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
     "DatasetList": {
       "id": "DatasetList",
       "properties": {
@@ -2783,6 +2809,18 @@
       },
       "type": "object"
     },
+    "DimensionalityReductionMetrics": {
+      "description": "Model evaluation metrics for dimensionality reduction models.",
+      "id": "DimensionalityReductionMetrics",
+      "properties": {
+        "totalExplainedVarianceRatio": {
+          "description": "Total percentage of variance explained by the selected principal components.",
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
     "EncryptionConfiguration": {
       "id": "EncryptionConfiguration",
       "properties": {
@@ -2846,6 +2884,10 @@
         "clusteringMetrics": {
           "$ref": "ClusteringMetrics",
           "description": "Populated for clustering models."
+        },
+        "dimensionalityReductionMetrics": {
+          "$ref": "DimensionalityReductionMetrics",
+          "description": "Evaluation metrics when the model is a dimensionality reduction model, which currently includes PCA."
         },
         "multiClassClassificationMetrics": {
           "$ref": "MultiClassClassificationMetrics",
@@ -3117,6 +3159,10 @@
           "format": "int32",
           "type": "integer"
         },
+        "parquetOptions": {
+          "$ref": "ParquetOptions",
+          "description": "Additional properties to set if sourceFormat is set to Parquet."
+        },
         "schema": {
           "$ref": "TableSchema",
           "description": "[Optional] The schema for the data. Schema is required for CSV and JSON formats. Schema is disallowed for Google Cloud Bigtable, Cloud Datastore backups, and Avro formats."
@@ -3341,6 +3387,13 @@
           "description": "Learn rate used for this iteration.",
           "format": "double",
           "type": "number"
+        },
+        "principalComponentInfos": {
+          "description": "The information of the principal components.",
+          "items": {
+            "$ref": "PrincipalComponentInfo"
+          },
+          "type": "array"
         },
         "trainingLoss": {
           "description": "Loss computed on the training data at the end of iteration.",
@@ -3567,6 +3620,10 @@
           "description": "[Optional] Specifies a string that represents a null value in a CSV file. For example, if you specify \"\\N\", BigQuery interprets \"\\N\" as a null value when loading a CSV file. The default value is the empty string. If you set this property to a custom value, BigQuery throws an error if an empty string is present for all data types except for STRING and BYTE. For STRING and BYTE columns, BigQuery interprets the empty string as an empty value.",
           "type": "string"
         },
+        "parquetOptions": {
+          "$ref": "ParquetOptions",
+          "description": "[Optional] Options to configure parquet support."
+        },
         "projectionFields": {
           "description": "If sourceFormat is set to \"DATASTORE_BACKUP\", indicates which entity properties to load into BigQuery from a Cloud Datastore backup. Property names are case sensitive and must be top-level properties. If no properties are specified, BigQuery loads all properties. If any named property isn't found in the Cloud Datastore backup, an invalid error is returned in the job result.",
           "items": {
@@ -3656,6 +3713,10 @@
         "createDisposition": {
           "description": "[Optional] Specifies whether the job is allowed to create new tables. The following values are supported: CREATE_IF_NEEDED: If the table does not exist, BigQuery creates the table. CREATE_NEVER: The table must already exist. If it does not, a 'notFound' error is returned in the job result. The default value is CREATE_IF_NEEDED. Creation, truncation and append actions occur as one atomic update upon job completion.",
           "type": "string"
+        },
+        "createSession": {
+          "description": "If true, creates a new session, where session id will be a server generated random id. If false, runs query with an existing session_id passed in ConnectionProperty, otherwise runs query in non-session mode.",
+          "type": "boolean"
         },
         "defaultDataset": {
           "$ref": "DatasetReference",
@@ -4007,6 +4068,10 @@
           "description": "The DDL operation performed, possibly dependent on the pre-existence of the DDL target. Possible values (new values might be added in the future): \"CREATE\": The query created the DDL target. \"SKIP\": No-op. Example cases: the query is CREATE TABLE IF NOT EXISTS while the table already exists, or the query is DROP TABLE IF EXISTS while the table does not exist. \"REPLACE\": The query replaced the DDL target. Example case: the query is CREATE OR REPLACE TABLE, and the table already exists. \"DROP\": The query deleted the DDL target.",
           "type": "string"
         },
+        "ddlTargetDataset": {
+          "$ref": "DatasetReference",
+          "description": "[Output-only] The DDL target dataset. Present only for CREATE/ALTER/DROP SCHEMA queries."
+        },
         "ddlTargetRoutine": {
           "$ref": "RoutineReference",
           "description": "The DDL target routine. Present only for CREATE/DROP FUNCTION/PROCEDURE queries."
@@ -4304,6 +4369,11 @@
     "Model": {
       "id": "Model",
       "properties": {
+        "bestTrialId": {
+          "description": "The best trial_id across all training runs.",
+          "format": "int64",
+          "type": "string"
+        },
         "creationTime": {
           "description": "Output only. The time when this model was created, in millisecs since the epoch.",
           "format": "int64",
@@ -4483,6 +4553,20 @@
       },
       "type": "object"
     },
+    "ParquetOptions": {
+      "id": "ParquetOptions",
+      "properties": {
+        "enableListInference": {
+          "description": "[Optional] Indicates whether to use schema inference specifically for Parquet LIST logical type.",
+          "type": "boolean"
+        },
+        "enumAsString": {
+          "description": "[Optional] Indicates whether to infer Parquet ENUM logical type as STRING instead of BYTES by default.",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
     "Policy": {
       "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https://cloud.google.com/iam/help/conditions/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time \u003c timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time \u003c timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= - version: 3 For a description of IAM and its features, see the [IAM documentation](https://cloud.google.com/iam/docs/).",
       "id": "Policy",
@@ -4510,6 +4594,33 @@
           "description": "Specifies the format of the policy. Valid values are `0`, `1`, and `3`. Requests that specify an invalid value are rejected. Any operation that affects conditional role bindings must specify version `3`. This requirement applies to the following operations: * Getting a policy that includes a conditional role binding * Adding a conditional role binding to a policy * Changing a conditional role binding in a policy * Removing any role binding, with or without a condition, from a policy that includes conditions **Important:** If you use IAM Conditions, you must include the `etag` field whenever you call `setIamPolicy`. If you omit this field, then IAM allows you to overwrite a version `3` policy with a version `1` policy, and all of the conditions in the version `3` policy are lost. If a policy does not include any conditions, operations on that policy may specify any valid version or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https://cloud.google.com/iam/help/conditions/resource-policies).",
           "format": "int32",
           "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "PrincipalComponentInfo": {
+      "description": "Principal component infos, used only for eigen decomposition based models, e.g., PCA. Ordered by explained_variance in the descending order.",
+      "id": "PrincipalComponentInfo",
+      "properties": {
+        "cumulativeExplainedVarianceRatio": {
+          "description": "The explained_variance is pre-ordered in the descending order to compute the cumulative explained variance ratio.",
+          "format": "double",
+          "type": "number"
+        },
+        "explainedVariance": {
+          "description": "Explained variance by this principal component, which is simply the eigenvalue.",
+          "format": "double",
+          "type": "number"
+        },
+        "explainedVarianceRatio": {
+          "description": "Explained_variance over the total explained variance.",
+          "format": "double",
+          "type": "number"
+        },
+        "principalComponentId": {
+          "description": "Id of the principal component.",
+          "format": "int64",
+          "type": "string"
         }
       },
       "type": "object"
@@ -4665,6 +4776,10 @@
             "$ref": "ConnectionProperty"
           },
           "type": "array"
+        },
+        "createSession": {
+          "description": "If true, creates a new session, where session id will be a server generated random id. If false, runs query with an existing session_id passed in ConnectionProperty, otherwise runs query in non-session mode.",
+          "type": "boolean"
         },
         "defaultDataset": {
           "$ref": "DatasetReference",
@@ -4998,6 +5113,10 @@
           "readOnly": true,
           "type": "string"
         },
+        "returnTableType": {
+          "$ref": "StandardSqlTableType",
+          "description": "Optional. Set only if Routine is a \"TABLE_VALUED_FUNCTION\". TODO(b/173344646) - Update return_type documentation to say it cannot be set for TABLE_VALUED_FUNCTION before preview launch."
+        },
         "returnType": {
           "$ref": "StandardSqlDataType",
           "description": "Optional if language = \"SQL\"; required otherwise. If absent, the return type is inferred from definition_body at query time in each query that references this routine. If present, then the evaluated result will be cast to the specified returned type at query time. For example, for the functions created with the following statements: * `CREATE FUNCTION Add(x FLOAT64, y FLOAT64) RETURNS FLOAT64 AS (x + y);` * `CREATE FUNCTION Increment(x FLOAT64) AS (Add(x, 1));` * `CREATE FUNCTION Decrement(x FLOAT64) RETURNS FLOAT64 AS (Add(x, -1));` The return_type is `{type_kind: \"FLOAT64\"}` for `Add` and `Decrement`, and is absent for `Increment` (inferred as FLOAT64 at query time). Suppose the function `Add` is replaced by `CREATE OR REPLACE FUNCTION Add(x INT64, y INT64) AS (x + y);` Then the inferred return type of `Increment` is automatically changed to INT64 at query time, while the return type of `Decrement` remains FLOAT64."
@@ -5011,12 +5130,14 @@
           "enum": [
             "ROUTINE_TYPE_UNSPECIFIED",
             "SCALAR_FUNCTION",
-            "PROCEDURE"
+            "PROCEDURE",
+            "TABLE_VALUED_FUNCTION"
           ],
           "enumDescriptions": [
             "",
             "Non-builtin permanent scalar function.",
-            "Stored procedure."
+            "Stored procedure.",
+            "Non-builtin permanent TVF."
           ],
           "type": "string"
         }
@@ -5277,6 +5398,20 @@
       "id": "StandardSqlStructType",
       "properties": {
         "fields": {
+          "items": {
+            "$ref": "StandardSqlField"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "StandardSqlTableType": {
+      "description": "A table type",
+      "id": "StandardSqlTableType",
+      "properties": {
+        "columns": {
+          "description": "The columns in this table type",
           "items": {
             "$ref": "StandardSqlField"
           },
@@ -6234,7 +6369,7 @@
           "type": "string"
         },
         "timeSeriesIdColumn": {
-          "description": "The id column that will be used to indicate different time series to forecast in parallel.",
+          "description": "The time series id column that was used during ARIMA model training.",
           "type": "string"
         },
         "timeSeriesTimestampColumn": {

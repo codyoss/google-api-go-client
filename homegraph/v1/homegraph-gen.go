@@ -79,7 +79,7 @@ const mtlsBasePath = "https://homegraph.mtls.googleapis.com/"
 
 // OAuth2 scopes used by this API.
 const (
-	// New Service: https://www.googleapis.com/auth/homegraph
+	// Private Service: https://www.googleapis.com/auth/homegraph
 	HomegraphScope = "https://www.googleapis.com/auth/homegraph"
 )
 
@@ -215,7 +215,7 @@ func (s *AgentOtherDeviceId) MarshalJSON() ([]byte, error) {
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
-// Device: Third-party device definition.
+// Device: Third-party device definition. Next ID = 14
 type Device struct {
 	// Attributes: Attributes for the traits supported by the device.
 	Attributes googleapi.RawMessage `json:"attributes,omitempty"`
@@ -225,7 +225,9 @@ type Device struct {
 	// (https://developers.google.com/assistant/smarthome/reference/intent/query)
 	// and EXECUTE
 	// (https://developers.google.com/assistant/smarthome/reference/intent/execute)
-	// intent.
+	// intent. Data in this object has a few constraints: No sensitive
+	// information, including but not limited to Personally Identifiable
+	// Information.
 	CustomData googleapi.RawMessage `json:"customData,omitempty"`
 
 	// DeviceInfo: Device manufacturer, model, hardware version, and
@@ -237,6 +239,13 @@ type Device struct {
 
 	// Name: Names given to this device by your smart home Action.
 	Name *DeviceNames `json:"name,omitempty"`
+
+	// NonLocalTraits: See description for "traits". For Smart Home
+	// Entertainment Devices (SHED) devices, some traits can only be
+	// executed on 3P cloud, e.g. "non_local_traits": [ { "trait":
+	// "action.devices.traits.MediaInitiation" }, { "trait":
+	// "action.devices.traits.Channel" } ] go/shed-per-trait-routing.
+	NonLocalTraits []*NonLocalTrait `json:"nonLocalTraits,omitempty"`
 
 	// NotificationSupportedByAgent: Indicates whether your smart home
 	// Action will report notifications to Google for this device via
@@ -375,6 +384,38 @@ type Empty struct {
 	// ServerResponse contains the HTTP response code and headers from the
 	// server.
 	googleapi.ServerResponse `json:"-"`
+}
+
+// NonLocalTrait: LINT.IfChange go/shed-per-trait-routing. Making it
+// object to allow for extendible design, where we can add attributes in
+// future.
+type NonLocalTrait struct {
+	// Trait: Trait name, e.g., "action.devices.traits.MediaInitiation". See
+	// device traits
+	// (https://developers.google.com/assistant/smarthome/traits).
+	Trait string `json:"trait,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "Trait") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Trait") to include in API
+	// requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *NonLocalTrait) MarshalJSON() ([]byte, error) {
+	type NoMethod NonLocalTrait
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
 // QueryRequest: Request type for the `Query`
@@ -665,6 +706,73 @@ func (s *ReportStateAndNotificationResponse) MarshalJSON() ([]byte, error) {
 	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
 }
 
+// RequestLinkRequest: Request type for the `RequestLink`
+// (#google.home.graph.v1.HomeGraphApiService.RequestLink) call.
+type RequestLinkRequest struct {
+	// Payload: Required. ID(s) and detection time of potential Cast
+	// devices.
+	Payload *RequestLinkRequestPayload `json:"payload,omitempty"`
+
+	// RequestId: Required. Request ID used for debugging.
+	RequestId string `json:"requestId,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "Payload") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "Payload") to include in
+	// API requests with the JSON null value. By default, fields with empty
+	// values are omitted from API requests. However, any field with an
+	// empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *RequestLinkRequest) MarshalJSON() ([]byte, error) {
+	type NoMethod RequestLinkRequest
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
+// RequestLinkRequestPayload: Payload containing potential devices
+// detected and when they were detected.
+type RequestLinkRequestPayload struct {
+	// DetectionTime: Required. Time at which devices represented in
+	// `potential_cast_device_ids` were detected.
+	DetectionTime string `json:"detectionTime,omitempty"`
+
+	// PotentialCastDeviceIds: Required. List of device IDs detected that
+	// may potentially be for Cast devices.
+	PotentialCastDeviceIds []string `json:"potentialCastDeviceIds,omitempty"`
+
+	// ForceSendFields is a list of field names (e.g. "DetectionTime") to
+	// unconditionally include in API requests. By default, fields with
+	// empty values are omitted from API requests. However, any non-pointer,
+	// non-interface field appearing in ForceSendFields will be sent to the
+	// server regardless of whether the field is empty or not. This may be
+	// used to include empty fields in Patch requests.
+	ForceSendFields []string `json:"-"`
+
+	// NullFields is a list of field names (e.g. "DetectionTime") to include
+	// in API requests with the JSON null value. By default, fields with
+	// empty values are omitted from API requests. However, any field with
+	// an empty value appearing in NullFields will be sent to the server as
+	// null. It is an error if a field in this list has a non-empty value.
+	// This may be used to include null fields in Patch requests.
+	NullFields []string `json:"-"`
+}
+
+func (s *RequestLinkRequestPayload) MarshalJSON() ([]byte, error) {
+	type NoMethod RequestLinkRequestPayload
+	raw := NoMethod(*s)
+	return gensupport.MarshalJSON(raw, s.ForceSendFields, s.NullFields)
+}
+
 // RequestSyncDevicesRequest: Request type for the `RequestSyncDevices`
 // (#google.home.graph.v1.HomeGraphApiService.RequestSyncDevices) call.
 type RequestSyncDevicesRequest struct {
@@ -910,7 +1018,7 @@ func (c *AgentUsersDeleteCall) Header() http.Header {
 
 func (c *AgentUsersDeleteCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -1049,7 +1157,7 @@ func (c *DevicesQueryCall) Header() http.Header {
 
 func (c *DevicesQueryCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -1186,7 +1294,7 @@ func (c *DevicesReportStateAndNotificationCall) Header() http.Header {
 
 func (c *DevicesReportStateAndNotificationCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -1268,6 +1376,134 @@ func (c *DevicesReportStateAndNotificationCall) Do(opts ...googleapi.CallOption)
 
 }
 
+// method id "homegraph.devices.requestLink":
+
+type DevicesRequestLinkCall struct {
+	s                  *Service
+	requestlinkrequest *RequestLinkRequest
+	urlParams_         gensupport.URLParams
+	ctx_               context.Context
+	header_            http.Header
+}
+
+// RequestLink: Sends an account linking suggestion to users associated
+// with any potential Cast devices detected by third-party devices. This
+// request must be authorized using service account credentials from
+// your Actions console project.
+func (r *DevicesService) RequestLink(requestlinkrequest *RequestLinkRequest) *DevicesRequestLinkCall {
+	c := &DevicesRequestLinkCall{s: r.s, urlParams_: make(gensupport.URLParams)}
+	c.requestlinkrequest = requestlinkrequest
+	return c
+}
+
+// Fields allows partial responses to be retrieved. See
+// https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+// for more information.
+func (c *DevicesRequestLinkCall) Fields(s ...googleapi.Field) *DevicesRequestLinkCall {
+	c.urlParams_.Set("fields", googleapi.CombineFields(s))
+	return c
+}
+
+// Context sets the context to be used in this call's Do method. Any
+// pending HTTP request will be aborted if the provided context is
+// canceled.
+func (c *DevicesRequestLinkCall) Context(ctx context.Context) *DevicesRequestLinkCall {
+	c.ctx_ = ctx
+	return c
+}
+
+// Header returns an http.Header that can be modified by the caller to
+// add HTTP headers to the request.
+func (c *DevicesRequestLinkCall) Header() http.Header {
+	if c.header_ == nil {
+		c.header_ = make(http.Header)
+	}
+	return c.header_
+}
+
+func (c *DevicesRequestLinkCall) doRequest(alt string) (*http.Response, error) {
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
+	for k, v := range c.header_ {
+		reqHeaders[k] = v
+	}
+	reqHeaders.Set("User-Agent", c.s.userAgent())
+	var body io.Reader = nil
+	body, err := googleapi.WithoutDataWrapper.JSONReader(c.requestlinkrequest)
+	if err != nil {
+		return nil, err
+	}
+	reqHeaders.Set("Content-Type", "application/json")
+	c.urlParams_.Set("alt", alt)
+	c.urlParams_.Set("prettyPrint", "false")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "v1/devices:requestLink")
+	urls += "?" + c.urlParams_.Encode()
+	req, err := http.NewRequest("POST", urls, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = reqHeaders
+	return gensupport.SendRequest(c.ctx_, c.s.client, req)
+}
+
+// Do executes the "homegraph.devices.requestLink" call.
+// Exactly one of *Empty or error will be non-nil. Any non-2xx status
+// code is an error. Response headers are in either
+// *Empty.ServerResponse.Header or (if a response was returned at all)
+// in error.(*googleapi.Error).Header. Use googleapi.IsNotModified to
+// check whether the returned error was because http.StatusNotModified
+// was returned.
+func (c *DevicesRequestLinkCall) Do(opts ...googleapi.CallOption) (*Empty, error) {
+	gensupport.SetOptions(c.urlParams_, opts...)
+	res, err := c.doRequest("json")
+	if res != nil && res.StatusCode == http.StatusNotModified {
+		if res.Body != nil {
+			res.Body.Close()
+		}
+		return nil, &googleapi.Error{
+			Code:   res.StatusCode,
+			Header: res.Header,
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer googleapi.CloseBody(res)
+	if err := googleapi.CheckResponse(res); err != nil {
+		return nil, err
+	}
+	ret := &Empty{
+		ServerResponse: googleapi.ServerResponse{
+			Header:         res.Header,
+			HTTPStatusCode: res.StatusCode,
+		},
+	}
+	target := &ret
+	if err := gensupport.DecodeResponse(target, res); err != nil {
+		return nil, err
+	}
+	return ret, nil
+	// {
+	//   "description": "Sends an account linking suggestion to users associated with any potential Cast devices detected by third-party devices. This request must be authorized using service account credentials from your Actions console project.",
+	//   "flatPath": "v1/devices:requestLink",
+	//   "httpMethod": "POST",
+	//   "id": "homegraph.devices.requestLink",
+	//   "parameterOrder": [],
+	//   "parameters": {},
+	//   "path": "v1/devices:requestLink",
+	//   "request": {
+	//     "$ref": "RequestLinkRequest"
+	//   },
+	//   "response": {
+	//     "$ref": "Empty"
+	//   },
+	//   "scopes": [
+	//     "https://www.googleapis.com/auth/homegraph"
+	//   ]
+	// }
+
+}
+
 // method id "homegraph.devices.requestSync":
 
 type DevicesRequestSyncCall struct {
@@ -1318,7 +1554,7 @@ func (c *DevicesRequestSyncCall) Header() http.Header {
 
 func (c *DevicesRequestSyncCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -1446,7 +1682,7 @@ func (c *DevicesSyncCall) Header() http.Header {
 
 func (c *DevicesSyncCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}

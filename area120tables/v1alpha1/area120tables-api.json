@@ -29,7 +29,7 @@
   "canonicalName": "Area120 Tables",
   "description": "",
   "discoveryVersion": "v1",
-  "documentationLink": "https://tables.area120.google.com",
+  "documentationLink": "https://support.google.com/area120-tables/answer/10011390",
   "fullyEncodeReservedExpansion": true,
   "icons": {
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
@@ -405,6 +405,11 @@
                 "parent"
               ],
               "parameters": {
+                "filter": {
+                  "description": "Optional. Filter to only include resources matching the requirements. For more information, see [Filtering list results](https://support.google.com/area120-tables/answer/10503371).",
+                  "location": "query",
+                  "type": "string"
+                },
                 "pageSize": {
                   "description": "The maximum number of rows to return. The service may return fewer than this value. If unspecified, at most 50 rows are returned. The maximum value is 1,000; values above 1,000 are coerced to 1,000.",
                   "format": "int32",
@@ -571,7 +576,7 @@
       }
     }
   },
-  "revision": "20210112",
+  "revision": "20210310",
   "rootUrl": "https://area120tables.googleapis.com/",
   "schemas": {
     "BatchCreateRowsRequest": {
@@ -810,8 +815,18 @@
       "description": "A single row in a table.",
       "id": "Row",
       "properties": {
+        "createTime": {
+          "description": "Time when the row was created.",
+          "format": "google-datetime",
+          "type": "string"
+        },
         "name": {
           "description": "The resource name of the row. Row names have the form `tables/{table}/rows/{row}`. The name is ignored when creating a row.",
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Time when the row was last updated.",
+          "format": "google-datetime",
           "type": "string"
         },
         "values": {
@@ -835,12 +850,22 @@
           },
           "type": "array"
         },
+        "createTime": {
+          "description": "Time when the table was created.",
+          "format": "google-datetime",
+          "type": "string"
+        },
         "displayName": {
           "description": "The human readable title of the table.",
           "type": "string"
         },
         "name": {
           "description": "The resource name of the table. Table names have the form `tables/{table}`.",
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Time when the table was last updated excluding updates to individual rows",
+          "format": "google-datetime",
           "type": "string"
         }
       },
@@ -878,6 +903,11 @@
       "description": "A single workspace.",
       "id": "Workspace",
       "properties": {
+        "createTime": {
+          "description": "Time when the workspace was created.",
+          "format": "google-datetime",
+          "type": "string"
+        },
         "displayName": {
           "description": "The human readable title of the workspace.",
           "type": "string"
@@ -892,6 +922,11 @@
             "$ref": "Table"
           },
           "type": "array"
+        },
+        "updateTime": {
+          "description": "Time when the workspace was last updated.",
+          "format": "google-datetime",
+          "type": "string"
         }
       },
       "type": "object"

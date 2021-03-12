@@ -312,7 +312,7 @@
       }
     }
   },
-  "revision": "20201213",
+  "revision": "20210206",
   "rootUrl": "https://lifesciences.googleapis.com/",
   "schemas": {
     "Accelerator": {
@@ -764,6 +764,10 @@
           "$ref": "Pipeline",
           "description": "The pipeline this operation represents."
         },
+        "pubSubTopic": {
+          "description": "The name of the Cloud Pub/Sub topic where notifications of operation status changes are sent.",
+          "type": "string"
+        },
         "startTime": {
           "description": "The first time at which resources were allocated to execute the pipeline.",
           "format": "google-datetime",
@@ -967,6 +971,10 @@
         "pipeline": {
           "$ref": "Pipeline",
           "description": "Required. The description of the pipeline to run."
+        },
+        "pubSubTopic": {
+          "description": "The name of an existing Pub/Sub topic. The server will publish messages to this topic whenever the status of the operation changes. The Life Sciences Service Agent account must have publisher permissions to the specified topic or notifications will not be sent.",
+          "type": "string"
         }
       },
       "type": "object"
@@ -1086,7 +1094,7 @@
           "type": "array"
         },
         "dockerCacheImages": {
-          "description": "The Compute Engine Disk Images to use as a Docker cache. The disks will be mounted into the Docker folder in a way that the images present in the cache will not need to be pulled. The digests of the cached images must match those of the tags used or the latest version will still be pulled. The root directory of the ext4 image must contain `image` and `overlay2` directories copied from the Docker directory of a VM where the desired Docker images have already been pulled. Only a single image is supported.",
+          "description": "The Compute Engine Disk Images to use as a Docker cache. The disks will be mounted into the Docker folder in a way that the images present in the cache will not need to be pulled. The digests of the cached images must match those of the tags used or the latest version will still be pulled. The root directory of the ext4 image must contain `image` and `overlay2` directories copied from the Docker directory of a VM where the desired Docker images have already been pulled. Any images pulled that are not cached will be stored on the first cache disk instead of the boot disk. Only a single image is supported.",
           "items": {
             "type": "string"
           },

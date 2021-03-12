@@ -3,7 +3,7 @@
   "baseUrl": "https://chat.googleapis.com/",
   "batchPath": "batch",
   "canonicalName": "Hangouts Chat",
-  "description": "Enables bots to fetch information and perform actions in Hangouts Chat.",
+  "description": "Enables bots to fetch information and perform actions in Google Chat.",
   "discoveryVersion": "v1",
   "documentationLink": "https://developers.google.com/hangouts/chat",
   "fullyEncodeReservedExpansion": true,
@@ -548,7 +548,6 @@
               ],
               "parameters": {
                 "name": {
-                  "description": "Resource name, in the form \"spaces/*/messages/*\". Example: spaces/AAAAMpdlehY/messages/UMxbHmzDlr4.UMxbHmzDlr4",
                   "location": "path",
                   "pattern": "^spaces/[^/]+/messages/[^/]+$",
                   "required": true,
@@ -602,7 +601,7 @@
       }
     }
   },
-  "revision": "20201211",
+  "revision": "20210307",
   "rootUrl": "https://chat.googleapis.com/",
   "schemas": {
     "ActionParameter": {
@@ -1267,7 +1266,6 @@
           "type": "string"
         },
         "name": {
-          "description": "Resource name, in the form \"spaces/*/messages/*\". Example: spaces/AAAAMpdlehY/messages/UMxbHmzDlr4.UMxbHmzDlr4",
           "type": "string"
         },
         "previewText": {
@@ -1342,7 +1340,7 @@
       "type": "object"
     },
     "SlashCommand": {
-      "description": "A Slash Command in Hangouts Chat.",
+      "description": "A Slash Command in Chat.",
       "id": "SlashCommand",
       "properties": {
         "commandId": {
@@ -1554,7 +1552,7 @@
     }
   },
   "servicePath": "",
-  "title": "Hangouts Chat API",
+  "title": "Google Chat API",
   "version": "v1",
   "version_module": true
 }

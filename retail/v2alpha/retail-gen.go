@@ -813,9 +813,10 @@ type GoogleCloudRetailV2alphaBigQuerySource struct {
 	// Supported values for product imports: * `product` (default): One JSON
 	// Product per line. Each product must have a valid Product.id. *
 	// `product_merchant_center`: See Importing catalog data from Merchant
-	// Center (/retail/recommendations-ai/docs/upload-catalog#mc). Supported
-	// values for user events imports: * `user_event` (default): One JSON
-	// UserEvent per line. * `user_event_ga360`: Using
+	// Center
+	// (https://cloud.google.com/retail/recommendations-ai/docs/upload-catalog#mc).
+	// Supported values for user events imports: * `user_event` (default):
+	// One JSON UserEvent per line. * `user_event_ga360`: Using
 	// https://support.google.com/analytics/answer/3437719?hl=en.
 	DataSchema string `json:"dataSchema,omitempty"`
 
@@ -903,7 +904,7 @@ func (s *GoogleCloudRetailV2alphaCatalog) MarshalJSON() ([]byte, error) {
 }
 
 // GoogleCloudRetailV2alphaCustomAttribute: A custom attribute that is
-// not explicitly modeled in Product].
+// not explicitly modeled in Product.
 type GoogleCloudRetailV2alphaCustomAttribute struct {
 	// Numbers: The numerical values of this custom attribute. For example,
 	// `[2.3, 15.4]` when the key is "lengths_cm". At most 400 values are
@@ -1090,9 +1091,10 @@ type GoogleCloudRetailV2alphaGcsSource struct {
 	// Supported values for product imports: * `product` (default): One JSON
 	// Product per line. Each product must have a valid Product.id. *
 	// `product_merchant_center`: See Importing catalog data from Merchant
-	// Center (/retail/recommendations-ai/docs/upload-catalog#mc). Supported
-	// values for user events imports: * `user_event` (default): One JSON
-	// UserEvent per line. * `user_event_ga360`: Using
+	// Center
+	// (https://cloud.google.com/retail/recommendations-ai/docs/upload-catalog#mcc).
+	// Supported values for user events imports: * `user_event` (default):
+	// One JSON UserEvent per line. * `user_event_ga360`: Using
 	// https://support.google.com/analytics/answer/3437719?hl=en.
 	DataSchema string `json:"dataSchema,omitempty"`
 
@@ -1102,8 +1104,8 @@ type GoogleCloudRetailV2alphaGcsSource struct {
 	// matching one or more files, such as `gs://bucket/directory/*.json`. A
 	// request can contain at most 100 files, and each file can be up to 2
 	// GB. See Importing product information
-	// (/recommendations-ai/docs/upload-catalog) for the expected file
-	// format and setup instructions.
+	// (https://cloud.google.com/recommendations-ai/docs/upload-catalog) for
+	// the expected file format and setup instructions.
 	InputUris []string `json:"inputUris,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g. "DataSchema") to
@@ -1677,11 +1679,11 @@ type GoogleCloudRetailV2alphaProduct struct {
 	// country of a customer. Numerical features. Some examples would be the
 	// height/weight of a product, or age of a customer. For example: `{
 	// "vendor": {"text": ["vendor123", "vendor456"]}, "lengths_cm":
-	// {"numbers":[2.3, 15.4]}, "heights_cm": {"numbers":[8.1, 6.4]} }`. A
-	// maximum of 150 attributes are allowed. Otherwise, an INVALID_ARGUMENT
-	// error is returned. The key must be a UTF-8 encoded string with a
-	// length limit of 5,000 characters. Otherwise, an INVALID_ARGUMENT
-	// error is returned.
+	// {"numbers":[2.3, 15.4]}, "heights_cm": {"numbers":[8.1, 6.4]} }`.
+	// This field needs to pass all below criteria, otherwise an
+	// INVALID_ARGUMENT error is returned: * Max entries count: 150 by
+	// default; 100 for Type.VARIANT. * The key must be a UTF-8 encoded
+	// string with a length limit of 128 characters.
 	Attributes map[string]GoogleCloudRetailV2alphaCustomAttribute `json:"attributes,omitempty"`
 
 	// Availability: The online availability of the Product. Default to
@@ -1702,8 +1704,8 @@ type GoogleCloudRetailV2alphaProduct struct {
 	// AvailableQuantity: The available quantity of the item.
 	AvailableQuantity int64 `json:"availableQuantity,omitempty"`
 
-	// AvailableTime: The timestamp when this Product becomes available
-	// recommendation and search.
+	// AvailableTime: The timestamp when this Product becomes available for
+	// recommendation.
 	AvailableTime string `json:"availableTime,omitempty"`
 
 	// Categories: Product categories. This field is repeated for supporting
@@ -1744,8 +1746,9 @@ type GoogleCloudRetailV2alphaProduct struct {
 	// Property Product.sku (https://schema.org/sku).
 	Id string `json:"id,omitempty"`
 
-	// Images: Product images for the product. A maximum of 300 images are
-	// allowed. Google Merchant Center property image_link
+	// Images: Product images for the product.Highly recommended to put the
+	// main image to the first. A maximum of 300 images are allowed. Google
+	// Merchant Center property image_link
 	// (https://support.google.com/merchants/answer/6324350). Schema.org
 	// property Product.image (https://schema.org/image).
 	Images []*GoogleCloudRetailV2alphaImage `json:"images,omitempty"`
@@ -1783,7 +1786,7 @@ type GoogleCloudRetailV2alphaProduct struct {
 	Tags []string `json:"tags,omitempty"`
 
 	// Title: Required. Product title. This field must be a UTF-8 encoded
-	// string with a length limit of 128 characters. Otherwise, an
+	// string with a length limit of 1,000 characters. Otherwise, an
 	// INVALID_ARGUMENT error is returned. Google Merchant Center property
 	// title (https://support.google.com/merchants/answer/6324415).
 	// Schema.org property Product.name (https://schema.org/name).
@@ -1806,10 +1809,12 @@ type GoogleCloudRetailV2alphaProduct struct {
 	// etc.
 	Type string `json:"type,omitempty"`
 
-	// Uri: Canonical URL directly linking to the product detail page. This
-	// field must be a UTF-8 encoded string with a length limit of 5,000
-	// characters. Otherwise, an INVALID_ARGUMENT error is returned. Google
-	// Merchant Center property link
+	// Uri: Canonical URL directly linking to the product detail page. It is
+	// strongly recommended to provide a valid uri for the product,
+	// otherwise the service performance could be significantly degraded.
+	// This field must be a UTF-8 encoded string with a length limit of
+	// 5,000 characters. Otherwise, an INVALID_ARGUMENT error is returned.
+	// Google Merchant Center property link
 	// (https://support.google.com/merchants/answer/6324416). Schema.org
 	// property Offer.url (https://schema.org/url).
 	Uri string `json:"uri,omitempty"`
@@ -2272,9 +2277,10 @@ type GoogleCloudRetailV2alphaUserEvent struct {
 	// `add-to-cart`: Products being added to cart. * `category-page-view`:
 	// Special pages such as sale or promotion pages viewed. *
 	// `detail-page-view`: Products detail page viewed. * `home-page-view`:
-	// Homepage viewed. * `purchase-complete`: User finishing a purchase. *
-	// `search`: Product search. * `shopping-cart-page-view`: User viewing a
-	// shopping cart.
+	// Homepage viewed. * `promotion-offered`: Promotion is offered to a
+	// user. * `promotion-not-offered`: Promotion is not offered to a user.
+	// * `purchase-complete`: User finishing a purchase. * `search`: Product
+	// search. * `shopping-cart-page-view`: User viewing a shopping cart.
 	EventType string `json:"eventType,omitempty"`
 
 	// ExperimentIds: A list of identifiers for the independent experiment
@@ -2289,9 +2295,10 @@ type GoogleCloudRetailV2alphaUserEvent struct {
 	// with other character(s). Category pages include special pages such as
 	// sales or promotions. For instance, a special sale page may have the
 	// category hierarchy: "pageCategories" : ["Sales > 2017 Black Friday
-	// Deals"]. Required for `category-page-view` events. Other event types
-	// should not set this field. Otherwise, an INVALID_ARGUMENT error is
-	// returned.
+	// Deals"]. Required for `category-page-view` events. At least one of
+	// search_query or page_categories is required for `search` events.
+	// Other event types should not set this field. Otherwise, an
+	// INVALID_ARGUMENT error is returned.
 	PageCategories []string `json:"pageCategories,omitempty"`
 
 	// PageViewId: A unique id of a web page view. This should be kept the
@@ -2328,9 +2335,10 @@ type GoogleCloudRetailV2alphaUserEvent struct {
 
 	// SearchQuery: The user's search query. The value must be a UTF-8
 	// encoded string with a length limit of 5,000 characters. Otherwise, an
-	// INVALID_ARGUMENT error is returned. Required for `search` events.
-	// Other event types should not set this field. Otherwise, an
-	// INVALID_ARGUMENT error is returned.
+	// INVALID_ARGUMENT error is returned. At least one of search_query or
+	// page_categories is required for `search` events. Other event types
+	// should not set this field. Otherwise, an INVALID_ARGUMENT error is
+	// returned.
 	SearchQuery string `json:"searchQuery,omitempty"`
 
 	// Uri: Complete URL (window.location.href) of the user's current page.
@@ -3573,7 +3581,7 @@ func (c *ProjectsLocationsCatalogsListCall) Header() http.Header {
 
 func (c *ProjectsLocationsCatalogsListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -3752,7 +3760,7 @@ func (c *ProjectsLocationsCatalogsPatchCall) Header() http.Header {
 
 func (c *ProjectsLocationsCatalogsPatchCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -3909,7 +3917,7 @@ func (c *ProjectsLocationsCatalogsBranchesOperationsGetCall) Header() http.Heade
 
 func (c *ProjectsLocationsCatalogsBranchesOperationsGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4057,7 +4065,7 @@ func (c *ProjectsLocationsCatalogsBranchesProductsCreateCall) Header() http.Head
 
 func (c *ProjectsLocationsCatalogsBranchesProductsCreateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4200,7 +4208,7 @@ func (c *ProjectsLocationsCatalogsBranchesProductsDeleteCall) Header() http.Head
 
 func (c *ProjectsLocationsCatalogsBranchesProductsDeleteCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4268,7 +4276,7 @@ func (c *ProjectsLocationsCatalogsBranchesProductsDeleteCall) Do(opts ...googlea
 	//   ],
 	//   "parameters": {
 	//     "name": {
-	//       "description": "Required. Full resource name of Product, such as `projects/*/locations/global/catalogs/default_catalog/branches/default_branch/products/some_product_id`. If the caller does not have permission to delete the Product, regardless of whether or not it exists, a PERMISSION_DENIED error is returned. If the Product to delete does not exist, a NOT_FOUND error is returned. The Product to delete can neither be a Product.Type.COLLECTION Product member nor a Product.Type.PRIMARY Product with more than one variants. Otherwise, an INVALID_ARGUMENT error is returned.",
+	//       "description": "Required. Full resource name of Product, such as `projects/*/locations/global/catalogs/default_catalog/branches/default_branch/products/some_product_id`. If the caller does not have permission to delete the Product, regardless of whether or not it exists, a PERMISSION_DENIED error is returned. If the Product to delete does not exist, a NOT_FOUND error is returned. The Product to delete can neither be a Product.Type.COLLECTION Product member nor a Product.Type.PRIMARY Product with more than one variants. Otherwise, an INVALID_ARGUMENT error is returned. All inventory information for the named Product will be deleted.",
 	//       "location": "path",
 	//       "pattern": "^projects/[^/]+/locations/[^/]+/catalogs/[^/]+/branches/[^/]+/products/.*$",
 	//       "required": true,
@@ -4341,7 +4349,7 @@ func (c *ProjectsLocationsCatalogsBranchesProductsGetCall) Header() http.Header 
 
 func (c *ProjectsLocationsCatalogsBranchesProductsGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4479,7 +4487,7 @@ func (c *ProjectsLocationsCatalogsBranchesProductsImportCall) Header() http.Head
 
 func (c *ProjectsLocationsCatalogsBranchesProductsImportCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4638,7 +4646,7 @@ func (c *ProjectsLocationsCatalogsBranchesProductsPatchCall) Header() http.Heade
 
 func (c *ProjectsLocationsCatalogsBranchesProductsPatchCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4800,7 +4808,7 @@ func (c *ProjectsLocationsCatalogsOperationsGetCall) Header() http.Header {
 
 func (c *ProjectsLocationsCatalogsOperationsGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4974,7 +4982,7 @@ func (c *ProjectsLocationsCatalogsOperationsListCall) Header() http.Header {
 
 func (c *ProjectsLocationsCatalogsOperationsListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -5147,7 +5155,7 @@ func (c *ProjectsLocationsCatalogsPlacementsPredictCall) Header() http.Header {
 
 func (c *ProjectsLocationsCatalogsPlacementsPredictCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -5324,7 +5332,7 @@ func (c *ProjectsLocationsCatalogsUserEventsCollectCall) Header() http.Header {
 
 func (c *ProjectsLocationsCatalogsUserEventsCollectCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -5480,7 +5488,7 @@ func (c *ProjectsLocationsCatalogsUserEventsImportCall) Header() http.Header {
 
 func (c *ProjectsLocationsCatalogsUserEventsImportCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -5623,7 +5631,7 @@ func (c *ProjectsLocationsCatalogsUserEventsPurgeCall) Header() http.Header {
 
 func (c *ProjectsLocationsCatalogsUserEventsPurgeCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -5770,7 +5778,7 @@ func (c *ProjectsLocationsCatalogsUserEventsRejoinCall) Header() http.Header {
 
 func (c *ProjectsLocationsCatalogsUserEventsRejoinCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -5910,7 +5918,7 @@ func (c *ProjectsLocationsCatalogsUserEventsWriteCall) Header() http.Header {
 
 func (c *ProjectsLocationsCatalogsUserEventsWriteCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -6062,7 +6070,7 @@ func (c *ProjectsLocationsOperationsGetCall) Header() http.Header {
 
 func (c *ProjectsLocationsOperationsGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -6236,7 +6244,7 @@ func (c *ProjectsLocationsOperationsListCall) Header() http.Header {
 
 func (c *ProjectsLocationsOperationsListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}

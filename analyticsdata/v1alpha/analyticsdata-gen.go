@@ -365,7 +365,7 @@ func (s *CaseExpression) MarshalJSON() ([]byte, error) {
 
 // Cohort: Defines a cohort selection criteria. A cohort is a group of
 // users who share a common characteristic. For example, users with the
-// same `firstTouchDate` belong to the same cohort.
+// same `firstSessionDate` belong to the same cohort.
 type Cohort struct {
 	// DateRange: The cohort selects users whose first touch date is between
 	// start date and end date defined in the `dateRange`. This `dateRange`
@@ -385,7 +385,7 @@ type Cohort struct {
 	DateRange *DateRange `json:"dateRange,omitempty"`
 
 	// Dimension: Dimension used by the cohort. Required and only supports
-	// `firstTouchDate`.
+	// `firstSessionDate`.
 	Dimension string `json:"dimension,omitempty"`
 
 	// Name: Assigns a name to this cohort. The dimension `cohort` is valued
@@ -928,12 +928,6 @@ type Filter struct {
 	// InListFilter: A filter for in list values.
 	InListFilter *InListFilter `json:"inListFilter,omitempty"`
 
-	// NullFilter: A filter for null values. If True, a null dimension value
-	// is matched by this filter. Null filter is commonly used inside a NOT
-	// filter expression. For example, a NOT expression of a null filter
-	// removes rows when a dimension is null.
-	NullFilter bool `json:"nullFilter,omitempty"`
-
 	// NumericFilter: A filter for numeric or date values.
 	NumericFilter *NumericFilter `json:"numericFilter,omitempty"`
 
@@ -1467,8 +1461,11 @@ type Pivot struct {
 	// will indicate the corresponding date range from the request.
 	FieldNames []string `json:"fieldNames,omitempty"`
 
-	// Limit: The number of rows to return in this pivot. If unspecified, 10
-	// rows are returned. If -1, all rows are returned.
+	// Limit: The number of rows to return in this pivot. If the `limit`
+	// parameter is unspecified, up to 10,000 rows are returned. The product
+	// of the `limit` for each `pivot` in a `RunPivotReportRequest` must not
+	// exceed 100,000. For example, a two pivot request with `limit: 1000`
+	// in each pivot will fail because the product is `1,000,000`.
 	Limit int64 `json:"limit,omitempty,string"`
 
 	// MetricAggregations: Aggregate the metrics by dimensions in this pivot
@@ -1552,9 +1549,9 @@ type PivotHeader struct {
 	// corresponding dimension combinations.
 	PivotDimensionHeaders []*PivotDimensionHeader `json:"pivotDimensionHeaders,omitempty"`
 
-	// RowCount: The cardinality of the pivot as if offset = 0 and limit =
-	// -1. The total number of rows for this pivot's fields regardless of
-	// how the parameters offset and limit are specified in the request.
+	// RowCount: The cardinality of the pivot. The total number of rows for
+	// this pivot's fields regardless of how the parameters `offset` and
+	// `limit` are specified in the request.
 	RowCount int64 `json:"rowCount,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g.
@@ -1681,8 +1678,8 @@ type PropertyQuota struct {
 	TokensPerDay *QuotaStatus `json:"tokensPerDay,omitempty"`
 
 	// TokensPerHour: Standard Analytics Properties can use up to 5,000
-	// tokens per day; Analytics 360 Properties can use 50,000 tokens per
-	// day. An API request consumes a single number of tokens, and that
+	// tokens per hour; Analytics 360 Properties can use 50,000 tokens per
+	// hour. An API request consumes a single number of tokens, and that
 	// number is deducted from both the hourly and daily quotas.
 	TokensPerHour *QuotaStatus `json:"tokensPerHour,omitempty"`
 
@@ -1978,8 +1975,9 @@ type RunRealtimeReportRequest struct {
 	// Dimensions: The dimensions requested and displayed.
 	Dimensions []*Dimension `json:"dimensions,omitempty"`
 
-	// Limit: The number of rows to return. If unspecified, 10 rows are
-	// returned. If -1, all rows are returned.
+	// Limit: The number of rows to return. If the `limit` parameter is
+	// unspecified, 10,000 rows are returned. The API returns a maximum of
+	// 100,000 rows per request, no matter how many you ask for.
 	Limit int64 `json:"limit,omitempty,string"`
 
 	// MetricAggregations: Aggregation of metrics. Aggregated metric values
@@ -2134,9 +2132,10 @@ type RunReportRequest struct {
 	// if they are not separately removed by a filter.
 	KeepEmptyRows bool `json:"keepEmptyRows,omitempty"`
 
-	// Limit: The number of rows to return. If unspecified, 10 rows are
-	// returned. If -1, all rows are returned. To learn more about this
-	// pagination parameter, see Pagination
+	// Limit: The number of rows to return. If the `limit` parameter is
+	// unspecified, 10,000 rows are returned. The API returns a maximum of
+	// 100,000 rows per request, no matter how many you ask for. To learn
+	// more about this pagination parameter, see Pagination
 	// (https://developers.google.com/analytics/devguides/reporting/data/v1/basics#pagination).
 	Limit int64 `json:"limit,omitempty,string"`
 
@@ -2374,7 +2373,7 @@ func (c *PropertiesGetMetadataCall) Header() http.Header {
 
 func (c *PropertiesGetMetadataCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -2512,7 +2511,7 @@ func (c *PropertiesRunRealtimeReportCall) Header() http.Header {
 
 func (c *PropertiesRunRealtimeReportCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -2652,7 +2651,7 @@ func (c *V1alphaBatchRunPivotReportsCall) Header() http.Header {
 
 func (c *V1alphaBatchRunPivotReportsCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -2779,7 +2778,7 @@ func (c *V1alphaBatchRunReportsCall) Header() http.Header {
 
 func (c *V1alphaBatchRunReportsCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -2909,7 +2908,7 @@ func (c *V1alphaRunPivotReportCall) Header() http.Header {
 
 func (c *V1alphaRunPivotReportCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -3041,7 +3040,7 @@ func (c *V1alphaRunReportCall) Header() http.Header {
 
 func (c *V1alphaRunReportCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210113")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/20210311")
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
