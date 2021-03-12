@@ -22,15 +22,9 @@ import (
 
 var (
 	baseKeyFile string
-	// envReaderKeyFile points to a service account that is a "Storage
-	// Object Reader" and is a "Service Account Token Creator" on envWriterSA.
 	readerKeyFile string
-	// envReaderEmail is the name of the reader service account.
 	readerEmail string
-	// envWriterEmail is the name of the writer service account. This service
-	// account has been granted roles/serviceusage.serviceUsageConsumer.
 	writerEmail string
-	// envProjectID is a project that hosts a GCS bucket.
 	projectID string
 )
 
