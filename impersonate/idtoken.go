@@ -15,8 +15,8 @@ import (
 	"time"
 
 	"golang.org/x/oauth2"
-	"google.golang.org/api/internal"
 	"google.golang.org/api/option"
+	htransport "google.golang.org/api/transport/http"
 )
 
 // IDTokenConfig for generating an impersonated ID token.
@@ -50,20 +50,13 @@ func IDTokenSource(ctx context.Context, config IDTokenConfig, opts ...option.Cli
 	}
 
 	clientOpts := append(defaultClientOptions(), opts...)
-	var ds internal.DialSettings
-	for _, opt := range clientOpts {
-		opt.Apply(&ds)
-	}
-	if err := ds.Validate(); err != nil {
-		return nil, err
-	}
-	creds, err := internal.Creds(ctx, &ds)
+	client, _, err := htransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
 	}
 
 	its := impersonatedIDTokenSource{
-		client:          oauth2.NewClient(ctx, creds.TokenSource),
+		client:          client,
 		targetPrincipal: config.TargetPrincipal,
 		audience:        config.Audience,
 		includeEmail:    config.IncludeEmail,

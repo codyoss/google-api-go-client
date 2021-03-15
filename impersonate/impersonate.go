@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Package impersonate is used to impersonate Google Credentials.
 package impersonate
 
-// TODO: add some package docs
-// TODO: tests
+// TODO: user tests
 
 import (
 	"bytes"
@@ -19,9 +17,9 @@ import (
 	"time"
 
 	"golang.org/x/oauth2"
-	"google.golang.org/api/internal"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
+	htransport "google.golang.org/api/transport/http"
 )
 
 var (
@@ -72,21 +70,14 @@ func TokenSource(ctx context.Context, config Config, opts ...option.ClientOption
 		return nil, fmt.Errorf("impersonate: max lifetime is 3600s")
 	}
 	clientOpts := append(defaultClientOptions(), opts...)
-	var ds internal.DialSettings
-	for _, opt := range clientOpts {
-		opt.Apply(&ds)
-	}
-	if err := ds.Validate(); err != nil {
-		return nil, err
-	}
-	creds, err := internal.Creds(ctx, &ds)
+	client, _, err := htransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
 	}
 	// If a subject is specified a different auth-flow is initiated to
 	// impersonate as the provided subject(user).
 	if config.Subject != "" {
-		return user(ctx, config, creds.TokenSource)
+		return user(ctx, config, client)
 	}
 
 	// Default to the longest acceptable value of one hour as the token will
@@ -96,7 +87,7 @@ func TokenSource(ctx context.Context, config Config, opts ...option.ClientOption
 		lifetime = fmt.Sprintf("%.fs", config.Lifetime.Seconds())
 	}
 	its := impersonatedTokenSource{
-		client:          oauth2.NewClient(ctx, creds.TokenSource),
+		client:          client,
 		targetPrincipal: config.TargetPrincipal,
 		lifetime:        lifetime,
 	}

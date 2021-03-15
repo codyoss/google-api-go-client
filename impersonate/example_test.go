@@ -4,39 +4,12 @@ import (
 	"context"
 	"log"
 
-	"google.golang.org/api/admin/directory/v1"
+	admin "google.golang.org/api/admin/directory/v1"
 	"google.golang.org/api/impersonate"
 	"google.golang.org/api/option"
 	"google.golang.org/api/secretmanager/v1"
 	"google.golang.org/api/transport"
 )
-
-func ExampleIDTokenSource() {
-	ctx := context.Background()
-
-	// Base credentials sourced from ADC or provided client options.
-	ts, err := impersonate.IDTokenSource(ctx, impersonate.IDTokenConfig{
-		Audience:        "http://example.com",
-		TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
-		IncludeEmail:    true,
-		// Optionally supply delegates.
-		Delegates: []string{"bar@project-id.iam.gserviceaccount.com"},
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Pass an impersonated credential to any function that takes a client
-	// options.
-	client, _, err := transport.NewHTTPClient(ctx, option.WithTokenSource(ts))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Use your client that is authenticated with impersonated credentials to
-	// make requests.
-	client.Get("http://example.com")
-}
 
 func ExampleTokenSource_serviceAccount() {
 	ctx := context.Background()
@@ -90,4 +63,31 @@ func ExampleTokenSource_adminUser() {
 	// Use your client that is authenticated with impersonated credentials to
 	// make requests.
 	client.Groups.Delete("...")
+}
+
+func ExampleIDTokenSource() {
+	ctx := context.Background()
+
+	// Base credentials sourced from ADC or provided client options.
+	ts, err := impersonate.IDTokenSource(ctx, impersonate.IDTokenConfig{
+		Audience:        "http://example.com/",
+		TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
+		IncludeEmail:    true,
+		// Optionally supply delegates.
+		Delegates: []string{"bar@project-id.iam.gserviceaccount.com"},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Pass an impersonated credential to any function that takes a client
+	// options.
+	client, _, err := transport.NewHTTPClient(ctx, option.WithTokenSource(ts))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Use your client that is authenticated with impersonated credentials to
+	// make requests.
+	client.Get("http://example.com/")
 }

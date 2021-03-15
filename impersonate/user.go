@@ -19,7 +19,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func user(ctx context.Context, c Config, ts oauth2.TokenSource) (oauth2.TokenSource, error) {
+func user(ctx context.Context, c Config, client *http.Client) (oauth2.TokenSource, error) {
 	// Default to the longest acceptable value of one hour as the token will
 	// be refreshed automatically if not set.
 	lifetime := 3600 * time.Second
@@ -27,7 +27,7 @@ func user(ctx context.Context, c Config, ts oauth2.TokenSource) (oauth2.TokenSou
 		lifetime = c.Lifetime
 	}
 	u := userTokenSource{
-		client:          oauth2.NewClient(ctx, ts),
+		client:          client,
 		targetPrincipal: c.TargetPrincipal,
 		subject:         c.Subject,
 		lifetime:        lifetime,

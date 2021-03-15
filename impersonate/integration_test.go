@@ -21,25 +21,25 @@ import (
 )
 
 var (
-	baseKeyFile string
+	baseKeyFile   string
 	readerKeyFile string
-	readerEmail string
-	writerEmail string
-	projectID string
+	readerEmail   string
+	writerEmail   string
+	projectID     string
 )
 
 func TestMain(m *testing.M) {
 	flag.Parse()
 	rand.Seed(time.Now().UnixNano())
-	baseKeyFile = os.Getenv("API_GO_CLIENT_IMPERSONATE_BASE")
-	readerKeyFile = os.Getenv("API_GO_CLIENT_IMPERSONATE_READER")
-	readerEmail = os.Getenv("API_GO_CLIENT_IMPERSONATE_READER_SA")
-	writerEmail = os.Getenv("API_GO_CLIENT_IMPERSONATE_WRITER_SA")
+	baseKeyFile = os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
 	projectID = os.Getenv("GOOGLE_CLOUD_PROJECT")
+	readerKeyFile = os.Getenv("GCLOUD_TESTS_IMPERSONATE_READER_KEY")
+	readerEmail = os.Getenv("GCLOUD_TESTS_IMPERSONATE_READER_EMAIL")
+	writerEmail = os.Getenv("GCLOUD_TESTS_IMPERSONATE_WRITER_EMAIL")
 	os.Exit(m.Run())
 }
 
-func TestTokenSource(t *testing.T) {
+func TestTokenSourceIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
@@ -90,7 +90,7 @@ func TestTokenSource(t *testing.T) {
 	}
 }
 
-func TestIDTokenSource(t *testing.T) {
+func TestIDTokenSourceIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
