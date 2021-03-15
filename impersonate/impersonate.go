@@ -4,8 +4,6 @@
 
 package impersonate
 
-// TODO: user tests
-
 import (
 	"bytes"
 	"context"

@@ -72,6 +72,12 @@ type signJWTResponse struct {
 	SignedJWT string `json:"signedJwt"`
 }
 
+type exchangeTokenResponse struct {
+	AccessToken string `json:"access_token"`
+	TokenType   string `json:"token_type"`
+	ExpiresIn   int64  `json:"expires_in"`
+}
+
 type userTokenSource struct {
 	client  *http.Client
 	nowFunc func() time.Time
@@ -153,11 +159,7 @@ func (u userTokenSource) exchangeToken(signedJWT string) (*oauth2.Token, error) 
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to read body: %v", err)
 	}
-	var tokenResp struct {
-		AccessToken string `json:"access_token"`
-		TokenType   string `json:"token_type"`
-		ExpiresIn   int64  `json:"expires_in"`
-	}
+	var tokenResp exchangeTokenResponse
 	if err := json.Unmarshal(body, &tokenResp); err != nil {
 		return nil, fmt.Errorf("impersonate: unable to parse response: %v", err)
 	}

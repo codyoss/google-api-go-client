@@ -40,7 +40,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestTokenSourceIntegration(t *testing.T) {
-	if testing.Short() {
+	if !testing.Short() {
 		t.Skip("skipping integration test")
 	}
 	ctx := context.Background()
@@ -91,7 +91,7 @@ func TestTokenSourceIntegration(t *testing.T) {
 }
 
 func TestIDTokenSourceIntegration(t *testing.T) {
-	if testing.Short() {
+	if !testing.Short() {
 		t.Skip("skipping integration test")
 	}
 	ctx := context.Background()

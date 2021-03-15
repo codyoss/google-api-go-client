@@ -1,3 +1,7 @@
+// Copyright 2021 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package impersonate
 
 import (
@@ -39,10 +43,11 @@ func TestIDTokenSource(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			idTok := "id-token"
 			client := &http.Client{
 				Transport: RoundTripFn(func(req *http.Request) *http.Response {
 					resp := generateIDTokenResponse{
-						Token: "token",
+						Token: idTok,
 					}
 					b, err := json.Marshal(&resp)
 					if err != nil {
@@ -65,8 +70,12 @@ func TestIDTokenSource(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := ts.Token(); err != nil {
+			tok, err := ts.Token()
+			if err != nil {
 				t.Fatal(err)
+			}
+			if tok.AccessToken != idTok {
+				t.Fatalf("got %q, want %q", tok.AccessToken, idTok)
 			}
 		})
 	}

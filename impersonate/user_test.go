@@ -9,7 +9,6 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 	"testing"
@@ -18,13 +17,14 @@ import (
 	"google.golang.org/api/option"
 )
 
-func TestTokenSource_serviceAccount(t *testing.T) {
+func TestTokenSource_user(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
 		name            string
 		targetPrincipal string
 		scopes          []string
 		lifetime        time.Duration
+		subject         string
 		wantErr         bool
 	}{
 		{
@@ -47,20 +47,36 @@ func TestTokenSource_serviceAccount(t *testing.T) {
 			name:            "lifetime over max",
 			targetPrincipal: "foo@project-id.iam.gserviceaccount.com",
 			scopes:          []string{"scope"},
+			subject:         "admin@example.com",
 			wantErr:         false,
 		},
 	}
 
 	for _, tt := range tests {
+		userTok := "user-token"
 		t.Run(tt.name, func(t *testing.T) {
-			saTok := "sa-token"
 			client := &http.Client{
 				Transport: RoundTripFn(func(req *http.Request) *http.Response {
-					log.Println(req.URL.Path)
-					if strings.Contains(req.URL.Path, "generateAccessToken") {
-						resp := generateAccessTokenResp{
-							AccessToken: saTok,
-							ExpireTime:  time.Now().Format(time.RFC3339),
+					if strings.Contains(req.URL.Path, "signJwt") {
+						resp := signJWTResponse{
+							KeyID:     "123",
+							SignedJWT: "jwt",
+						}
+						b, err := json.Marshal(&resp)
+						if err != nil {
+							t.Fatalf("unable to marshal response: %v", err)
+						}
+						return &http.Response{
+							StatusCode: 200,
+							Body:       ioutil.NopCloser(bytes.NewReader(b)),
+							Header:     make(http.Header),
+						}
+					}
+					if strings.Contains(req.URL.Path, "/token") {
+						resp := exchangeTokenResponse{
+							AccessToken: userTok,
+							TokenType:   "Bearer",
+							ExpiresIn:   int64(time.Hour.Seconds()),
 						}
 						b, err := json.Marshal(&resp)
 						if err != nil {
@@ -79,6 +95,7 @@ func TestTokenSource_serviceAccount(t *testing.T) {
 				TargetPrincipal: tt.targetPrincipal,
 				Scopes:          tt.scopes,
 				Lifetime:        tt.lifetime,
+				Subject:         tt.subject,
 			}, option.WithHTTPClient(client))
 			if tt.wantErr && err != nil {
 				return
@@ -90,13 +107,9 @@ func TestTokenSource_serviceAccount(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if tok.AccessToken != saTok {
-				t.Fatalf("got %q, want %q", tok.AccessToken, saTok)
+			if tok.AccessToken != userTok {
+				t.Fatalf("got %q, want %q", tok.AccessToken, userTok)
 			}
 		})
 	}
 }
-
-type RoundTripFn func(req *http.Request) *http.Response
-
-func (f RoundTripFn) RoundTrip(req *http.Request) (*http.Response, error) { return f(req), nil }
