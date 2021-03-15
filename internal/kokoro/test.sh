@@ -7,7 +7,7 @@
 # Fail on any error
 set -eo pipefail
 
-export GCLOUD_TESTS_GOLANG_KEY="${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-service-account"
+export GOOGLE_APPLICATION_CREDENTIALS="${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-service-account"
 export GOOGLE_CLOUD_PROJECT="dulcet-port-762"
 export GCLOUD_TESTS_IMPERSONATE_READER_KEY="${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-impersonate-reader-service-account"
 export GCLOUD_TESTS_IMPERSONATE_READER_EMAIL="impersonate-reader@${GOOGLE_CLOUD_PROJECT}.iam.gserviceaccount.com"
