@@ -15,6 +15,7 @@ import (
 	"os"
 	"time"
 
+	"cloud.google.com/go/auth/oauth2adapt"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/internal/impersonate"
 
@@ -26,6 +27,11 @@ const quotaProjectEnvVar = "GOOGLE_CLOUD_QUOTA_PROJECT"
 // Creds returns credential information obtained from DialSettings, or if none, then
 // it returns default credential information.
 func Creds(ctx context.Context, ds *DialSettings) (*google.Credentials, error) {
+	if ds.TokenProvider != nil {
+		return &google.Credentials{
+			TokenSource: oauth2adapt.TokenSourceFromTokenProvider(ds.TokenProvider),
+		}, nil
+	}
 	creds, err := baseCreds(ctx, ds)
 	if err != nil {
 		return nil, err

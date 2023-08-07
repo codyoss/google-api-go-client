@@ -10,6 +10,7 @@ import (
 	"errors"
 	"net/http"
 
+	"cloud.google.com/go/auth"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/internal/impersonate"
@@ -26,6 +27,7 @@ type DialSettings struct {
 	DefaultScopes                 []string
 	EnableJwtWithScope            bool
 	TokenSource                   oauth2.TokenSource
+	TokenProvider                 auth.TokenProvider
 	Credentials                   *google.Credentials
 	CredentialsFile               string // if set, Token Source is ignored.
 	CredentialsJSON               []byte

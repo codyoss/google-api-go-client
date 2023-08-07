@@ -15,6 +15,8 @@ import (
 	"net/http"
 	"time"
 
+	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth/httptransport"
 	"go.opencensus.io/plugin/ochttp"
 	"golang.org/x/net/http2"
 	"golang.org/x/oauth2"
@@ -33,20 +35,24 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*http.Client, 
 	if err != nil {
 		return nil, "", err
 	}
-	clientCertSource, dialTLSContext, endpoint, err := internal.GetHTTPTransportConfigAndEndpoint(settings)
+	_, _, endpoint, err := internal.GetHTTPTransportConfigAndEndpoint(settings)
 	if err != nil {
 		return nil, "", err
 	}
-	// TODO(cbro): consider injecting the User-Agent even if an explicit HTTP client is provided?
-	if settings.HTTPClient != nil {
-		return settings.HTTPClient, endpoint, nil
-	}
-
-	trans, err := newTransport(ctx, defaultBaseTransport(ctx, clientCertSource, dialTLSContext), settings)
+	client, err := httptransport.NewClient(&httptransport.Options{
+		Headers:  make(http.Header),
+		Endpoint: endpoint,
+		CredentialOptions: detect.Options{
+			Scopes:          settings.GetScopes(),
+			Audience:        settings.GetAudience(),
+			Filepath:        settings.CredentialsFile,
+			CredentialsJSON: settings.CredentialsJSON,
+		},
+	})
 	if err != nil {
 		return nil, "", err
 	}
-	return &http.Client{Transport: trans}, endpoint, nil
+	return client, endpoint, nil
 }
 
 // NewTransport creates an http.RoundTripper for use communicating with a Google

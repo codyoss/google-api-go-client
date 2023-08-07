@@ -15,6 +15,8 @@ import (
 	"os"
 	"strings"
 
+	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth/grpctransport"
 	"cloud.google.com/go/compute/metadata"
 	"go.opencensus.io/plugin/ocgrpc"
 	"golang.org/x/oauth2"
@@ -90,28 +92,32 @@ func DialPool(ctx context.Context, opts ...option.ClientOption) (ConnPool, error
 		// Always assume pool size is 1 when a grpc.ClientConn is explicitly used.
 		poolSize = 1
 	}
-	o.GRPCConnPoolSize = 0 // we don't *need* to set this to zero, but it's safe to.
-
-	if poolSize == 0 || poolSize == 1 {
-		// Fast path for common case for a connection pool with a single connection.
-		conn, err := dial(ctx, false, o)
-		if err != nil {
-			return nil, err
-		}
-		return &singleConnPool{conn}, nil
+	_, endpoint, err := internal.GetGRPCTransportConfigAndEndpoint(o)
+	if err != nil {
+		return nil, err
 	}
-
-	pool := &roundRobinConnPool{}
-	for i := 0; i < poolSize; i++ {
-		conn, err := dial(ctx, false, o)
-		if err != nil {
-			defer pool.Close() // NOTE: error from Close is ignored.
-			return nil, err
-		}
-		pool.conns = append(pool.conns, conn)
+	pool, err := grpctransport.Dial(ctx, true, &grpctransport.Options{
+		PoolSize: poolSize,
+		Endpoint: endpoint,
+		CredentialOptions: detect.Options{
+			Scopes:          o.GetScopes(),
+			Audience:        o.GetAudience(),
+			Filepath:        o.CredentialsFile,
+			CredentialsJSON: o.CredentialsJSON,
+		},
+	})
+	if err != nil {
+		return nil, err
 	}
-	return pool, nil
+	return adaptPool{pool}, nil
 }
+
+type adaptPool struct {
+	grpctransport.GRPCClientConnPool
+}
+
+func (a adaptPool) Conn() *grpc.ClientConn { return a.Connection() }
+func (a adaptPool) Num() int               { return a.Len() }
 
 func dial(ctx context.Context, insecure bool, o *internal.DialSettings) (*grpc.ClientConn, error) {
 	if o.HTTPClient != nil {

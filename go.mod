@@ -3,6 +3,8 @@ module google.golang.org/api
 go 1.19
 
 require (
+	cloud.google.com/go/auth v0.0.1
+	cloud.google.com/go/auth/oauth2adapt v0.0.1
 	cloud.google.com/go/compute/metadata v0.2.3
 	github.com/google/go-cmp v0.5.9
 	github.com/google/s2a-go v0.1.4
@@ -30,3 +32,7 @@ require (
 	google.golang.org/genproto v0.0.0-20230706204954-ccb25ca9f130 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20230706204954-ccb25ca9f130 // indirect
 )
+
+replace cloud.google.com/go/auth => /Users/codyoss/scratch/google-auth-library-go
+
+replace cloud.google.com/go/auth/oauth2adapt => /Users/codyoss/scratch/google-auth-library-go/oauth2adapt
